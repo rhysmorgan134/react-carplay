@@ -1,7 +1,11 @@
 const path = require('path');
 const url = require('url');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const { channels } = require('../src/shared/constants');
+const ws = require('./ws')
+ws.ws()
+const Carplay = require('node-carplay')
+
 
 let mainWindow;
 function createWindow () {
@@ -10,14 +14,36 @@ function createWindow () {
     protocol: 'file:',
     slashes: true,
   });
-  mainWindow = new BrowserWindow({ width: 800, height: 600,webPreferences : {
+
+  globalShortcut.register('f5', function() {
+    console.log('f5 is pressed')
+    mainWindow.webContents.openDevTools()
+})
+
+  mainWindow = new BrowserWindow({ width: 800, height: 600, kiosk: true, webPreferences : {
 	preload: path.join(__dirname, 'preload.js'),
 	contextIsolation: false
 }});
   mainWindow.loadURL(startUrl);
+  let size = mainWindow.getSize()
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
+  const config = {
+      dpi: 240,
+      nightMode: 0,
+      hand: 0,
+      boxName: 'nodePlay',
+      width: size[0],
+      height: size[1],
+      fps: 30,
+  }
+  console.log("spawning carplay", config)
+  const carplay = new Carplay(config)
+  ipcMain.on('click', (event, data) => {
+    	  carplay.sendTouch(data.type, data.x, data.y)
+	  console.log(data.type, data.x, data.y)
+  })
 }
 app.on('ready', createWindow);
 app.on('window-all-closed', function () {
@@ -31,9 +57,4 @@ app.on('activate', function () {
   }
 });
 
-ipcMain.on(channels.APP_INFO, (event) => {
-  event.sender.send(channels.APP_INFO, {
-    appName: app.getName(),
-    appVersion: app.getVersion(),
-  });
-});
+

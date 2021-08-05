@@ -2,7 +2,10 @@
 bower_components
 node_modules
 dist
+build
+assets
 
 #files
 *.tgz
 *.log
+*.apk
