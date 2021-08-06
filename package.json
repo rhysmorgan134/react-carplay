@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "author": {
-	  "name" : "Rhys Morgan",
-	  "email" : "rhys1802@hotmail.co.uk"
-	},
+    "name": "Rhys Morgan",
+    "email": "rhys1802@hotmail.co.uk"
+  },
   "homepage": "./",
   "productName": "ReactCarplay",
   "main": "electron/main.js",
   "dependencies": {
     "@cycjimmy/jsmpeg-player": "^5.0.1",
+    "@fontsource/montserrat": "^4.5.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",

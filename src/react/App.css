@@ -23,6 +23,10 @@ html, body, #root, .App {
   height: 100%;
 }
 
+body {
+  font-family: "Montserrat";
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
