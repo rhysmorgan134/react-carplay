@@ -5,6 +5,9 @@ const {channels} = require('../src/shared/constants');
 const ws = require('./ws')
 ws.ws()
 const Carplay = require('node-carplay')
+const bindings = ['n', 'v', 'b', 'm', ]
+const keys = require('./bindings.json')
+console.log(keys['m'])
 
 
 let mainWindow;
@@ -22,7 +25,7 @@ function createWindow() {
     })
 
     mainWindow = new BrowserWindow({
-        width: 800, height: 600, kiosk: true, webPreferences: {
+        width: 800, height: 480, kiosk: false, webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: false
         }
@@ -63,6 +66,13 @@ function createWindow() {
             mainWindow.webContents.send('unplugged')
         }
     })
+
+    for (const [key, value] of Object.entries(keys)) {
+        globalShortcut.register(key, function () {
+            carplay.sendKey(value)
+        })
+    }
+
 }
 
 app.on('ready', createWindow);
