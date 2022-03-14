@@ -38,8 +38,9 @@ class App extends Component {
             mode: 'video',
             //readFpsFromTrack: true,
             maxDelay: 10,
+	    fps: 60,
             flushingTime: 1,
-            debug: false
+            debug: true
         });
         const height = this.divElement.clientHeight
         const width = this.divElement.clientWidth
@@ -84,8 +85,7 @@ class App extends Component {
     render() {
 
         const handleMDown = (e) => {
-            e.preventDefault()
-            console.log("touched", e, e.target.getBoundingClientRect())
+            //console.log("touched", e, e.target.getBoundingClientRect())
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.clientX - currentTargetRect.left
             let y = e.clientY - currentTargetRect.top
@@ -96,8 +96,7 @@ class App extends Component {
             ipcRenderer.send('click', {type: 14, x: x, y: y})
         }
         const handleMUp = (e) => {
-            e.preventDefault()
-            console.log("touched end", e)
+            //console.log("touched end", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.clientX - currentTargetRect.left
             let y = e.clientY - currentTargetRect.top
@@ -109,8 +108,7 @@ class App extends Component {
 
 
         const handleMMove = (e) => {
-            e.preventDefault()
-            console.log("touched drag", e)
+            //console.log("touched drag", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.clientX - currentTargetRect.left
             let y = e.clientY - currentTargetRect.top
@@ -120,8 +118,8 @@ class App extends Component {
         }
 
         const handleDown = (e) => {
-            e.preventDefault()
-            console.log("touched", e, e.target.getBoundingClientRect())
+            
+            //console.log("touched", e, e.target.getBoundingClientRect())
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.touches[0].clientX - currentTargetRect.left
             let y = e.touches[0].clientY - currentTargetRect.top
@@ -130,28 +128,31 @@ class App extends Component {
             this.setState({lastX: x, lastY: y})
             this.setState({mouseDown: true})
             ipcRenderer.send('click', {type: 14, x: x, y: y})
-        }
-        const handleUp = (e) => {
             e.preventDefault()
-            console.log("touched end", e)
+	}
+        const handleUp = (e) => {
+           
+            //console.log("touched end", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = this.state.lastX
             let y = this.state.lastY
             this.setState({mouseDown: false})
             ipcRenderer.send('click', {type: 16, x: x, y: y})
-        }
+            e.preventDefault()
+	}
 
 
         const handleMove = (e) => {
-            e.preventDefault()
-            console.log("touched drag", e)
+            
+            //console.log("touched drag", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.touches[0].clientX - currentTargetRect.left
             let y = e.touches[0].clientY - currentTargetRect.top
             x = x / this.state.width
             y = y / this.state.height
             ipcRenderer.send('click', {type: 15, x: x, y: y})
-        }
+            //e.preventDefault()
+	}
 
 
         return (

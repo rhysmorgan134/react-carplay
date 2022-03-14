@@ -16,11 +16,12 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "jmuxer": "^2.0.3",
-    "node-carplay": "~1.0.14",
+    "node-carplay": "^2.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-player": "^2.9.0",
     "react-scripts": "4.0.3",
+    "versiony": "^2.0.1",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
@@ -32,7 +33,8 @@
     "build-electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
     "package-deb": "USE_SYSTEM_FPM=true electron-builder build --linux deb --armv7l -c.extraMetadata.main=build/electron/main.js --publish never",
     "package": "electron-builder build --linux AppImage --armv7l -c.extraMetadata.main=build/electron/main.js --publish never"
-  },
+    "increment-version": "versiony package.json --patch && git add . && git commit -m 'new version' && git push"  
+},
   "build": {
     "files": [
       "build/**/*",

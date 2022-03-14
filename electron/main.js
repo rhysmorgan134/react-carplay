@@ -51,7 +51,7 @@ function createWindow() {
     })
 
     mainWindow = new BrowserWindow({
-        width: 800, height: 480, kiosk: false, webPreferences: {
+        width: 800, height: 480, kiosk: true, webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: false
         }
@@ -68,7 +68,7 @@ function createWindow() {
         boxName: 'nodePlay',
         width: size[0],
         height: size[1],
-        fps: 15,
+        fps: 60,
     }
     console.log("spawning carplay", config)
     const carplay = new Carplay(config, mp4Reader)
