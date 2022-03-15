@@ -2,13 +2,39 @@ const path = require('path');
 const url = require('url');
 const {app, BrowserWindow, ipcMain, ipcRenderer, globalShortcut} = require('electron');
 const {channels} = require('../src/shared/constants');
-const ws = require('./ws')
-ws.ws()
+const { Readable } = require('stream');
+const WebSocket = require('ws');
+// const JMuxer = require('jmuxer')
+// const jmuxer = new JMuxer({
+//     mode: 'video',
+//     fps: 10,
+//     debug: false
+// });
+const mp4Reader = new Readable({
+    read(size) {
+    }
+});
 const Carplay = require('node-carplay')
 const bindings = ['n', 'v', 'b', 'm', ]
 const keys = require('./bindings.json')
+let wss;
+wss = new WebSocket.Server({ port: 3001 });
 console.log(keys['m'])
 
+
+
+wss.on('connection', function connection(ws) {
+    console.log('Socket connected. sending data...');
+    const wsstream = WebSocket.createWebSocketStream(ws);
+    //lets pipe into jmuxer stream, then websocket
+    mp4Reader.pipe(wsstream);
+    ws.on('error', function error(error) {
+        console.log('WebSocket error');
+    });
+    ws.on('close', function close(msg) {
+        console.log('WebSocket close');
+    });
+});
 
 let mainWindow;
 
@@ -25,7 +51,7 @@ function createWindow() {
     })
 
     mainWindow = new BrowserWindow({
-        width: 800, height: 480, kiosk: false, webPreferences: {
+        width: 800, height: 480, kiosk: true, webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: false
         }
@@ -42,10 +68,10 @@ function createWindow() {
         boxName: 'nodePlay',
         width: size[0],
         height: size[1],
-        fps: 30,
+        fps: 60,
     }
     console.log("spawning carplay", config)
-    const carplay = new Carplay(config)
+    const carplay = new Carplay(config, mp4Reader)
     carplay.on('status', (data) => {
         if(data.status) {
             mainWindow.webContents.send('plugged')
@@ -67,11 +93,11 @@ function createWindow() {
         }
     })
 
-    for (const [key, value] of Object.entries(keys)) {
-        globalShortcut.register(key, function () {
-            carplay.sendKey(value)
-        })
-    }
+    // for (const [key, value] of Object.entries(keys)) {
+    //     globalShortcut.register(key, function () {
+    //         carplay.sendKey(value)
+    //     })
+    // }
 
 }
 
