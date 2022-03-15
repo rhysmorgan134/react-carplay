@@ -9,3 +9,5 @@ assets
 *.tgz
 *.log
 *.apk
+.idea/workspace.xml
+*.xml

@@ -4,12 +4,6 @@ const {app, BrowserWindow, ipcMain, ipcRenderer, globalShortcut} = require('elec
 const {channels} = require('../src/shared/constants');
 const { Readable } = require('stream');
 const WebSocket = require('ws');
-// const JMuxer = require('jmuxer')
-// const jmuxer = new JMuxer({
-//     mode: 'video',
-//     fps: 10,
-//     debug: false
-// });
 const mp4Reader = new Readable({
     read(size) {
     }
@@ -19,9 +13,6 @@ const bindings = ['n', 'v', 'b', 'm', ]
 const keys = require('./bindings.json')
 let wss;
 wss = new WebSocket.Server({ port: 3001 });
-console.log(keys['m'])
-
-
 
 wss.on('connection', function connection(ws) {
     console.log('Socket connected. sending data...');
@@ -93,11 +84,11 @@ function createWindow() {
         }
     })
 
-    // for (const [key, value] of Object.entries(keys)) {
-    //     globalShortcut.register(key, function () {
-    //         carplay.sendKey(value)
-    //     })
-    // }
+    for (const [key, value] of Object.entries(keys)) {
+        globalShortcut.register(key, function () {
+            carplay.sendKey(value)
+        })
+    }
 
 }
 

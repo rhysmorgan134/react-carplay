@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import "@fontsource/montserrat";
-import JsmpegPlayer from "./JsmpegPlayer";
 import JMuxer from 'jmuxer';
 
 

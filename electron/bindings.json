@@ -1,5 +1,10 @@
 {
   "n": "next",
   "m": "siri",
-  "v": "prev"
+  "v": "prev",
+  "Up": "up",
+  "Down": "down",
+  "Left": "left",
+  "Right": "Right",
+  "Space": "selectDown"
 }
