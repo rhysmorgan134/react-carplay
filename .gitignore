@@ -4,6 +4,7 @@ node_modules
 dist
 build
 assets
+.idea
 
 #files
 *.tgz
@@ -11,3 +12,4 @@ assets
 *.apk
 .idea/workspace.xml
 *.xml
+
