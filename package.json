@@ -1,6 +1,6 @@
 {
   "name": "carplay",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "author": {
     "name": "Rhys Morgan",
@@ -15,7 +15,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "jmuxer": "^2.0.3",
-    "node-carplay": "^2.0.0",
+    "node-carplay": "^2.0.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-player": "^2.9.0",

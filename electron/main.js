@@ -87,6 +87,11 @@ function createWindow() {
     for (const [key, value] of Object.entries(keys)) {
         globalShortcut.register(key, function () {
             carplay.sendKey(value)
+	    if(value==="selectDown"){
+	        setTimeout(()=>{
+		   carplay.sendKey("selectUp")
+		}, 200)
+	    }
         })
     }
 
