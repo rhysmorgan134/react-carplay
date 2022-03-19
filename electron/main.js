@@ -3,6 +3,7 @@ const url = require('url');
 const {app, BrowserWindow, ipcMain, ipcRenderer, globalShortcut} = require('electron');
 const {channels} = require('../src/shared/constants');
 const { Readable } = require('stream');
+const isDev = require('electron-is-dev');
 const WebSocket = require('ws');
 const mp4Reader = new Readable({
     read(size) {
@@ -40,20 +41,29 @@ function createWindow() {
         console.log('f5 is pressed')
         mainWindow.webContents.openDevTools()
     })
+    if(isDev) {
+        mainWindow = new BrowserWindow({
+            width: 1200, height: 600, frame: false, webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: false
+            }
+        });
+    } else {
+        mainWindow = new BrowserWindow({
+            width: 800, height: 480, kiosk: true, webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: false
+            }
+        });
+    }
 
-    mainWindow = new BrowserWindow({
-        width: 800, height: 480, kiosk: true, webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: false
-        }
-    });
     mainWindow.loadURL(startUrl);
     let size = mainWindow.getSize()
     mainWindow.on('closed', function () {
         mainWindow = null;
     });
     const config = {
-        dpi: 240,
+        dpi: 480,
         nightMode: 0,
         hand: 0,
         boxName: 'nodePlay',
@@ -85,6 +95,9 @@ function createWindow() {
     })
 
     for (const [key, value] of Object.entries(keys)) {
+        if(isDev) {
+            return
+        }
         globalShortcut.register(key, function () {
             carplay.sendKey(value)
 	    if(value==="selectDown"){
