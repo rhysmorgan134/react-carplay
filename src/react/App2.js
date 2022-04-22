@@ -4,8 +4,8 @@ import "@fontsource/montserrat";
 import JMuxer from 'jmuxer';
 import Modal from "react-modal";
 import Settings from "./Settings";
+import webCam from "./webCam";
 import WebCam from "./webCam";
-
 
 const customStyles = {
     content: {
@@ -42,10 +42,7 @@ class App extends Component {
             modalOpen: false,
             settings: {},
             running: false,
-            webCam: false,
-            lastFrame: new Date(),
-            tStart: new Date(),
-            vPlaying: false
+            webCam: false
         }
 
     }
@@ -59,25 +56,13 @@ class App extends Component {
         const jmuxer = new JMuxer({
             node: 'player',
             mode: 'video',
-            maxDelay: 30,
-            fps: 30,
+            maxDelay: 100,
+	        fps: 60,
             flushingTime: 100,
             debug: false
-
         });
         const height = this.divElement.clientHeight
         const width = this.divElement.clientWidth
-        // const canvas = document.querySelector("canvas");
-        // const ctx = canvas.getContext("2d");
-        // const video = document.querySelector("video");
-        //
-        // video.addEventListener('play', () => {
-        //     function step() {
-        //         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        //         requestAnimationFrame(step)
-        //     }
-        //     requestAnimationFrame(step);
-        // })
         this.setState({height, width}, () => {
             console.log(this.state.height, this.state.width)
         })
@@ -101,54 +86,20 @@ class App extends Component {
             }
         })
 
-        setInterval(() => {
-            this.bufferCheck()
-        }, 10)
-
         ipcRenderer.send('statusReq')
         const ws = new WebSocket("ws://localhost:3001");
         ws.binaryType = 'arraybuffer';
         ws.onmessage = (event) => {
-
-
-            //this.setState({lastFrame: new Date()})
-            //
+            if(this.state.webCam) {
+                console.log("frame")
+            }
+           //
             let buf = Buffer.from(event.data)
             let duration = buf.readInt32BE(0)
             let video = buf.slice(4)
-            jmuxer.feed({video: new Uint8Array(video)})
+            jmuxer.feed({video: new Uint8Array(video), duration:duration})
         }
 
-        // setInterval(() => {
-        //     let player = document.getElementById('player')
-        //     console.log(player.duration)
-        //     console.log(player.currentTime)
-        // }, 500)
-
-    }
-
-    bufferCheck() {
-        let player = document.getElementById('player')
-
-        //console.log(new Date() - this.state.lastFrame)
-        if(player.buffered.length > 0){
-            let amount = player.buffered.end(0) - player.currentTime
-            console.log(amount)
-            if(amount < 0.1 && this.state.vPlaying) {
-                console.log("pausing")
-                this.setState({vPlaying: false})
-                player.pause()
-            } else if(amount > 0.1 && !(this.state.vPlaying)) {
-                console.log("playing")
-                this.setState({vPlaying: true})
-                player.play()
-            }
-        }
-    }
-
-    pause() {
-        let player = document.getElementById('player')
-        player.pause()
     }
 
     changeValue(k, v) {
@@ -211,7 +162,7 @@ class App extends Component {
         }
 
         const handleDown = (e) => {
-
+            
             //console.log("touched", e, e.target.getBoundingClientRect())
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.touches[0].clientX - currentTargetRect.left
@@ -222,9 +173,9 @@ class App extends Component {
             this.setState({mouseDown: true})
             ipcRenderer.send('click', {type: 14, x: x, y: y})
             e.preventDefault()
-        }
+	}
         const handleUp = (e) => {
-
+           
             //console.log("touched end", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = this.state.lastX
@@ -232,13 +183,13 @@ class App extends Component {
             this.setState({mouseDown: false})
             ipcRenderer.send('click', {type: 16, x: x, y: y})
             e.preventDefault()
-        }
+	}
 
         const openCarplay = (e) => {
             this.setState({status: true})
         }
         const handleMove = (e) => {
-
+            
             //console.log("touched drag", e)
             let currentTargetRect = e.target.getBoundingClientRect();
             let x = e.touches[0].clientX - currentTargetRect.left
@@ -247,16 +198,10 @@ class App extends Component {
             y = y / this.state.height
             ipcRenderer.send('click', {type: 15, x: x, y: y})
             //e.preventDefault()
-        }
+	}
 
-        const onWaiting = () => {
+        const onPause = () => {
             console.log('paused')
-        }
-
-        const timer = () => {
-            let player = document.getElementById('player')
-            console.log(player.duration)
-            console.log(player.currentTime)
         }
 
         const onError = () => {
@@ -267,11 +212,8 @@ class App extends Component {
             console.log('stopped')
         }
 
-        const waiting = () => {
-            let player = document.getElementById('player')
-            if(player.currentTime > 0) {
-                player.currentTime = player.currentTime - 0.10
-            }
+        const onPlay = () => {
+            console.log('play')
         }
 
 
@@ -301,16 +243,16 @@ class App extends Component {
                      }}
                      style={{height: '100%', width: '100%', padding: 0, margin: 0, display: 'flex'}}>
                     <video  style={{display: this.state.running ? "block" : "none"}} autoPlay onPause={() => console.log("paused")} onError={() => console.log("error")} onEnded={() => console.log("ended")} onPlay={() => console.log("playing")} onSuspend={() => console.log("suspended")}
-                            onAbort={() => console.log("aborted")} onStalled={() => console.log("stalled")} onWaiting={() => console.log("waiting")} onEmptied={() => console.log("emptied")}
+                            onAbort={() => console.log("aborted")} onStalled={() => console.log("stalled")} onEmptied={() => console.log("emptied")}
                             id="player" />
                     {this.state.status ? <div></div>
-                        :
+                         :
                         <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>
                             <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>CONNECT IPHONE TO BEGIN CARPLAY</div>
                             <button onClick={openModal}>Open Modal</button>
                             {this.state.running ? <button onClick={openCarplay}>Open Carplay</button> : <div></div>}
                         </div>
-                    }
+                        }
                 </div>
                 <Modal
                     isOpen={this.state.modalOpen}
