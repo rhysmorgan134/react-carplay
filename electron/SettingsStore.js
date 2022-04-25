@@ -33,6 +33,31 @@ class SettingsStore {
                 // minimum: 80,
                 default: 240
             }
+            // },
+            // canbus: {
+            //     type: 'boolean',
+            //     default: false
+            // },
+            // reverse: {
+            //     enum: ['disabled', 'canbus', 'gpio'],
+            //     default: 'disabled'
+            // },
+            // reverseId: {
+            //     type: 'integer',
+            //     minimum: 0,
+            //     default: 0
+            // },
+            // reverseByte: {
+            //     type: 'integer',
+            //     minimum: 0,
+            //     maximum: 7,
+            //     default: 0
+            // },
+            // reverseVal: {
+            //     enum: [0, 1, 2, 4, 8, 16, 32, 64, 128, 256],
+            //     default: 0
+            // }
+
         }
         this.store = new Store({schema: this.schema})
     }

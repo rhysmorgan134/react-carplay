@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import WebCam from "./webCam";
+import Modal from "react-modal";
 
 const customStyles = {
     display: 'flex',
@@ -17,6 +19,14 @@ class Settings extends Component {
     }
 
     render() {
+
+        const openWebCam = () => {
+            this.setState({webCam: true})
+        }
+
+        const closeWebcam = () => {
+            this.setState({webCam: false})
+        }
 
         const getInput = (k, v) => {
             switch (k) {
@@ -64,6 +74,7 @@ class Settings extends Component {
         return (
             <div>
                 <div>
+                    <button onClick={openWebCam}>Show webCam </button>
                     <hr />
                     <div style={customStyles}>
                         {keys.map(key => single(key, this.props.settings[key]))}
@@ -72,6 +83,16 @@ class Settings extends Component {
                 <div style={{marginTop: 'auto', marginLeft: 'auto', marginRight: 'auto'}}>
                     <button style={{marginTop: 'auto', marginLeft: 'auto', marginRight: 'auto'}} onClick={() => this.props.reqReload()}>click to reload</button>
                 </div>
+                <Modal
+                    isOpen={this.state.webCam}
+                    // onAfterOpen={afterOpenModal}
+                    onRequestClose={closeWebcam}
+                    style={customStyles}
+                    contentLabel="Example Modal"
+                    ariaHideApp={true}
+                >
+                    <WebCam />
+                </Modal>
             </div>
 
         );

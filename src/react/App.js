@@ -4,7 +4,7 @@ import "@fontsource/montserrat";
 import JMuxer from 'jmuxer';
 import Modal from "react-modal";
 import Settings from "./Settings";
-import WebCam from "./webCam";
+
 
 
 const customStyles = {
@@ -43,9 +43,6 @@ class App extends Component {
             settings: {},
             running: false,
             webCam: false,
-            lastFrame: new Date(),
-            tStart: new Date(),
-            vPlaying: false
         }
 
     }
@@ -60,24 +57,14 @@ class App extends Component {
             node: 'player',
             mode: 'video',
             maxDelay: 30,
-            fps: 30,
+            fps: fps,
             flushingTime: 100,
             debug: false
 
         });
         const height = this.divElement.clientHeight
         const width = this.divElement.clientWidth
-        // const canvas = document.querySelector("canvas");
-        // const ctx = canvas.getContext("2d");
-        // const video = document.querySelector("video");
-        //
-        // video.addEventListener('play', () => {
-        //     function step() {
-        //         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        //         requestAnimationFrame(step)
-        //     }
-        //     requestAnimationFrame(step);
-        // })
+
         this.setState({height, width}, () => {
             console.log(this.state.height, this.state.width)
         })
@@ -101,18 +88,10 @@ class App extends Component {
             }
         })
 
-        setInterval(() => {
-            this.bufferCheck()
-        }, 10)
-
         ipcRenderer.send('statusReq')
         const ws = new WebSocket("ws://localhost:3001");
         ws.binaryType = 'arraybuffer';
         ws.onmessage = (event) => {
-
-
-            //this.setState({lastFrame: new Date()})
-            //
             let buf = Buffer.from(event.data)
             let duration = buf.readInt32BE(0)
             let video = buf.slice(4)
@@ -127,29 +106,6 @@ class App extends Component {
 
     }
 
-    bufferCheck() {
-        let player = document.getElementById('player')
-
-        //console.log(new Date() - this.state.lastFrame)
-        if(player.buffered.length > 0){
-            let amount = player.buffered.end(0) - player.currentTime
-            console.log(amount)
-            if(amount < 0.1 && this.state.vPlaying) {
-                console.log("pausing")
-                this.setState({vPlaying: false})
-                player.pause()
-            } else if(amount > 0.1 && !(this.state.vPlaying)) {
-                console.log("playing")
-                this.setState({vPlaying: true})
-                player.play()
-            }
-        }
-    }
-
-    pause() {
-        let player = document.getElementById('player')
-        player.pause()
-    }
 
     changeValue(k, v) {
         ipcRenderer.send('settingsUpdate', {type: k, value: v})
@@ -163,14 +119,6 @@ class App extends Component {
 
         const closeModal = () => {
             this.setState({modalOpen: false})
-        }
-
-        const openWebCam = () => {
-            this.setState({webCam: true})
-        }
-
-        const closeWebcam = () => {
-            this.setState({webCam: false})
         }
 
         const reload = () => {
@@ -249,38 +197,12 @@ class App extends Component {
             //e.preventDefault()
         }
 
-        const onWaiting = () => {
-            console.log('paused')
-        }
-
-        const timer = () => {
-            let player = document.getElementById('player')
-            console.log(player.duration)
-            console.log(player.currentTime)
-        }
-
-        const onError = () => {
-            console.log('error')
-        }
-
-        const onStopped = () => {
-            console.log('stopped')
-        }
-
-        const waiting = () => {
-            let player = document.getElementById('player')
-            if(player.currentTime > 0) {
-                player.currentTime = player.currentTime - 0.10
-            }
-        }
-
-
 
 
         return (
             <div style={{height: '100%'}}  id={'main'}>
 
-                <button onClick={openWebCam}>Show webCam </button>
+
                 <div ref={(divElement) => {
                     this.divElement = divElement
                 }}
@@ -307,7 +229,7 @@ class App extends Component {
                         :
                         <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>
                             <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>CONNECT IPHONE TO BEGIN CARPLAY</div>
-                            <button onClick={openModal}>Open Modal</button>
+                            <button onClick={openModal}>Settings</button>
                             {this.state.running ? <button onClick={openCarplay}>Open Carplay</button> : <div></div>}
                         </div>
                     }
@@ -321,16 +243,6 @@ class App extends Component {
                     ariaHideApp={true}
                 >
                     <Settings settings={this.state.settings} changeValue={this.changeValue} reqReload={reload}/>
-                </Modal>
-                <Modal
-                    isOpen={this.state.webCam}
-                    // onAfterOpen={afterOpenModal}
-                    onRequestClose={closeWebcam}
-                    style={customStyles}
-                    contentLabel="Example Modal"
-                    ariaHideApp={true}
-                >
-                    <WebCam />
                 </Modal>
             </div>
         );

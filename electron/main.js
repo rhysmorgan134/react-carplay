@@ -22,21 +22,11 @@ wss = new WebSocket.Server({ port: 3001 , perMessageDeflate: false});
 wss.on('connection', function connection(ws) {
     console.log('Socket connected. sending data...');
     const wsstream = WebSocket.createWebSocketStream(ws);
-    //lets pipe into jmuxer stream, then websocket
-    //mp4Reader.pipe(wsstream);
-    mp4Reader.on('data', (data) => {
-        console.log(data)
-        //buffers.push(data)
 
-            ws.send(data)
+    mp4Reader.on('data', (data) => {
+        ws.send(data)
     })
 
-    // setInterval(() => {
-    //     if(buffers.length > 0) {
-    //         ws.send(Buffer.concat(buffers))
-    //         buffers = []
-    //     }
-    // }, 150)
     ws.on('error', function error(error) {
         console.log('WebSocket error');
     });
@@ -86,7 +76,7 @@ function createWindow() {
         boxName: 'nodePlay',
         width: size[0],
         height: size[1],
-        fps: 30//settings.store.get('fps'),
+        fps: settings.store.get('fps'),
     }
     console.log("spawning carplay", config)
     const carplay = new Carplay(config, mp4Reader)
