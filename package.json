@@ -18,8 +18,9 @@
     "electron-store": "^8.0.1",
     "jmuxer": "^2.0.4",
     "node-carplay": "^2.0.9",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-js-carplay": "^2.0.2",
     "react-modal": "^3.14.4",
     "react-scripts": "4.0.3",
     "react-switch": "^6.0.0",
@@ -71,7 +72,9 @@
     ]
   },
   "devDependencies": {
-    "electron": "^17.1.2",
+    "@babel/cli": "^7.17.6",
+    "@babel/preset-react": "^7.16.7",
+    "electron": "^13.1.8",
     "electron-builder": "^22.11.7"
   }
 }
