@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="jMuxer - a simple javascript mp4 muxer for non-standard streaming communications protocol">
+  <meta name="keywords" content="h264 player, mp4 player, mse, mp4 muxing, jmuxer, aac player">
+  <title>JMuxer demo</title>
+</head>
+<body>
+<p><b>Prerequisite command:</b> `node h264.js`</p>
+<div id="container" style="margin: 0 auto; text-align: center;">
+  <video style="border: 1px solid #333; max-width: 500px;" controls autoplay poster="images/loader-thumb.jpg" id="player"></video>
+</div>
+<script>
+  var jmuxer;
+  window.onload = function() {
+    var socketURL = 'ws://localhost:3001';
+    jmuxer = new JMuxer({
+      node: 'player',
+      mode: 'video',
+      flushingTime: 1000,
+      maxDelay: 100,
+      fps: 30,
+      debug: true,
+      onError: function(data) {
+        if (/Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor)) {
+          jmuxer.reset();
+        }
+      }
+    });
+
+    var ws = new WebSocket(socketURL);
+    ws.binaryType = 'arraybuffer';
+    ws.addEventListener('message',function(event) {
+      jmuxer.feed({
+        video: new Uint8Array(event.data)
+      });
+    });
+
+    ws.addEventListener('error', function(e) {
+      console.log('Socket Error');
+    });
+  }
+
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jmuxer@2.0.4/dist/jmuxer.min.js"></script>
+</body>
+</html>
