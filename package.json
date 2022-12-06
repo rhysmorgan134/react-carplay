@@ -1,6 +1,6 @@
 {
   "name": "carplay",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": true,
   "author": {
     "name": "Rhys Morgan",
@@ -10,6 +10,7 @@
   "productName": "ReactCarplay",
   "main": "electron/main.js",
   "dependencies": {
+    "@electron/rebuild": "^3.2.10",
     "@fontsource/montserrat": "^4.5.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
@@ -17,32 +18,35 @@
     "electron-is-dev": "^2.0.0",
     "electron-store": "^8.0.1",
     "jmuxer": "^2.0.4",
-    "node-carplay": "^2.0.9",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-js-carplay": "^2.0.2",
+    "node-carplay": "^2.0.10",
+    "react": "^18.2.0",
+    "react-app-rewired": "^2.2.1",
+    "react-dom": "^18.2.0",
+    "react-js-carplay": "^2.1.3",
     "react-modal": "^3.14.4",
-    "react-scripts": "4.0.3",
-    "react-switch": "^6.0.0",
-    "socketcan": "^3.0.0",
+    "react-scripts": "^5.0.1",
+    "react-switch": "^7.0.0",
+    "usb": "^1.7.1",
     "versiony": "^2.0.1",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "export BROWSER=none && react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "export BROWSER=none && react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject",
+    "electron-rebuild": "electron-rebuild",
     "start-electron": "export ELECTRON_START_URL=http://localhost:3000 && electron . --no-sandbox",
     "build-electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
     "package-deb": "USE_SYSTEM_FPM=true electron-builder build --linux deb --armv7l -c.extraMetadata.main=build/electron/main.js --publish never",
     "package": "electron-builder build --linux AppImage --armv7l -c.extraMetadata.main=build/electron/main.js --publish never",
     "package-x64": "electron-builder build --linux AppImage --x64 -c.extraMetadata.main=build/electron/main.js --publish never",
     "increment-version": "versiony package.json --patch && git add . && git commit -m 'new version' && git push",
-    "build-package": "npm run build && npm run build-electron && npm run package",
+    "build-package": "npm run electron-rebuild && npm run build && npm run build-electron && npm run package",
     "build-packagex64": "npm run build && npm run build-electron && npm run package-x64"
   },
   "build": {
+    "npmRebuild": false,
     "files": [
       "build/**/*",
       "node_modules/**/*"
@@ -74,7 +78,8 @@
   "devDependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/preset-react": "^7.16.7",
-    "electron": "^13.1.8",
-    "electron-builder": "^22.11.7"
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "process": "^0.11.10"
   }
 }
