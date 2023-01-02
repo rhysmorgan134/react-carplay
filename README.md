@@ -32,7 +32,7 @@
   </ol>
 </details>
 
-
+### There is an audio issue with later dongles sending out audio packets at a different sample rate please log any audio distortion issues [here](https://github.com/rhysmorgan134/react-carplay/issues/23)
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
