@@ -61,7 +61,7 @@ This project would not of been possible without electric monks work on a python 
 
 ### Prerequisites
 
-You need to have a calinkit adapter [link](https://amzn.to/3jwLT46) 
+You need to have a calinkit adapter [link](https://amzn.to/3X6OaF9) 
 
 The target machine should have FFMPEG/FFPLAY installed and working.
 
