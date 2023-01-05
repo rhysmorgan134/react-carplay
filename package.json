@@ -1,6 +1,6 @@
 {
   "name": "carplay",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "author": {
     "name": "Rhys Morgan",
@@ -18,11 +18,11 @@
     "electron-is-dev": "^2.0.0",
     "electron-store": "^8.0.1",
     "jmuxer": "^2.0.4",
-    "node-carplay": "^2.0.10",
+    "node-carplay": "^2.0.11",
     "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^18.2.0",
-    "react-js-carplay": "^2.1.3",
+    "react-js-carplay": "^2.1.4",
     "react-modal": "^3.14.4",
     "react-scripts": "^5.0.1",
     "react-switch": "^7.0.0",

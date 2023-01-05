@@ -92,6 +92,7 @@ function createWindow() {
     })
 
     carplay.on('quit', () => {
+        console.log("sending quit req")
         mainWindow.webContents.send('quitReq')
     })
 
