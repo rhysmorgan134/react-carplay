@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import "@fontsource/montserrat";
-import Carplay from "react-js-carplay";
+import Carplay from 'react-js-carplay'
 
 
 
@@ -67,13 +66,20 @@ class App extends Component {
 
         ipcRenderer.on('quitReq', () => {
             if(this.state.status) {
-                this.setState({modalOpen: true})
+                this.openModal()
             }
         })
 
         ipcRenderer.send('statusReq')
     }
 
+    openModal() {
+        this.setState({modalOpen: true})
+    }
+
+    closeModal() {
+        this.setState({modalOpen: false})
+    }
 
     changeValue(k, v) {
         ipcRenderer.send('settingsUpdate', {type: k, value: v})
@@ -103,6 +109,9 @@ class App extends Component {
                     reload={reload}
                     ws={this.ws}
                     type={"ws"}
+                    openModal={this.state.modalOpen}
+                    openModalReq={this.openModal.bind(this)}
+                    closeModalReq={this.closeModal.bind(this)}
                 /> : <div>loading</div>}
             </div>
         );
