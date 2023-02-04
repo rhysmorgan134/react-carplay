@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
-import Carplay from 'react-js-carplay'
+import {Carplay, CarplayAudio} from 'react-js-carplay'
+
 
 
 
@@ -100,6 +101,7 @@ class App extends Component {
         }
         return (
             <div style={{height: '100%'}}>
+
                 {this.state.startedUp===true ?
                 <Carplay
                     settings={this.state.settings}
@@ -113,6 +115,7 @@ class App extends Component {
                     openModalReq={this.openModal.bind(this)}
                     closeModalReq={this.closeModal.bind(this)}
                 /> : <div>loading</div>}
+                <CarplayAudio />
             </div>
         );
     }

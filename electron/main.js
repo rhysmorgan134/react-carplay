@@ -16,25 +16,6 @@ const Carplay = require('node-carplay')
 const keys = require('./bindings.json')
 let buffers = []
 
-let wss;
-wss = new WebSocket.Server({ port: 3001 , perMessageDeflate: false});
-
-wss.on('connection', function connection(ws) {
-    console.log('Socket connected. sending data...');
-    const wsstream = WebSocket.createWebSocketStream(ws);
-
-    mp4Reader.on('data', (data) => {
-        ws.send(data)
-    })
-
-    ws.on('error', function error(error) {
-        console.log('WebSocket error');
-    });
-    ws.on('close', function close(msg) {
-        console.log('WebSocket close');
-    });
-});
-
 let mainWindow;
 
 function createWindow() {
@@ -79,17 +60,7 @@ function createWindow() {
         fps: settings.store.get('fps'),
     }
     console.log("spawning carplay", config)
-    const carplay = new Carplay(config, mp4Reader)
-
-    carplay.on('status', (data) => {
-        if(data.status) {
-            mainWindow.webContents.send('plugged')
-        } else {
-            mainWindow.webContents.send('unplugged')
-        }
-        console.log("data received", data)
-
-    })
+    const carplay = new Carplay(config)
 
     carplay.on('quit', () => {
         console.log("sending quit req")
