@@ -17,7 +17,7 @@ fi
 
 echo "Downloading AppImage"
 
-curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v1.0.3/ReactCarplay-1.0.3-armv7l.AppImage --output /home/pi/Desktop/Carplay.AppImage
+curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v3.0.0/ReactCarplay-3.0.0-armv7l.AppImage --output /home/pi/Desktop/Carplay.AppImage
 
 echo "Download Done"
 
