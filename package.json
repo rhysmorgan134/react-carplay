@@ -1,6 +1,6 @@
 {
   "name": "carplay",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "author": {
     "name": "Rhys Morgan",
@@ -22,7 +22,7 @@
     "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
     "react-dom": "^18.2.0",
-    "react-js-carplay": "^3.0.5",
+    "react-js-carplay": "^3.0.7",
     "react-modal": "^3.14.4",
     "react-scripts": "^5.0.1",
     "react-switch": "^7.0.0",
@@ -45,7 +45,9 @@
     "package-x64": "electron-builder build --linux AppImage --x64 -c.extraMetadata.main=build/electron/main.js --publish never",
     "increment-version": "versiony package.json --patch && git add . && git commit -m 'new version' && git push",
     "build-package": "npm run electron-rebuild && npm run build && npm run build-electron && npm run package",
-    "build-packagex64": "npm run build && npm run build-electron && npm run package-x64"
+    "build-packagex64": "npm run build && npm run build-electron && npm run package-x64",
+    "build-packageMac": "npm run build && npm run build-electron && npm run package-Mac",
+    "package-Mac": "electron-builder --mac -c.extraMetadata.main=build/electron/main.js --publish never"
   },
   "build": {
     "npmRebuild": false,
