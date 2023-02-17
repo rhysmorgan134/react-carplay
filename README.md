@@ -4,6 +4,7 @@
 
 <a href="https://www.buymeacoffee.com/rhysm" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>   
 
+https://moderndaymods.com - guide on usage
 
 
 <!-- TABLE OF CONTENTS -->
@@ -69,36 +70,7 @@ The target machine should have FFMPEG/FFPLAY installed and working.
 
 Download correct package from [releases](https://github.com/rhysmorgan134/react-carplay/releases)
 
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-* ```chmod +x {AppImage}```
-* ```sudo ./{AppImage} --no-sandbox```
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-*  - [ ] Enabled hardware accelleration
-*  - [x] Replace jsmpeg with lighter alternative
-*  - [x] Make wireless operational 
-*  - [x] Integrate microphone
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
-
+https://moderndaymods.com - full walk through avalable
 
 
 <!-- CONTACT -->
