@@ -5,7 +5,7 @@
 <a href="https://www.buymeacoffee.com/rhysm" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>   
 
 https://moderndaymods.com - guide on usage
-
+https://forums.moderndaymods.com/ -> forums available for support and general car applications
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
