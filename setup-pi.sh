@@ -23,6 +23,7 @@ if getconf LONG_BIT | grep -q '64'; then
 else
 	echo "32 Bit Detected"
  	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v3.0.1/ReactCarplay-3.0.1-armv7l.AppImage --output /home/$USER/Desktop/Carplay.AppImage
+fi
 
 echo "Download Done"
 
