@@ -1,9 +1,9 @@
 {
   "name": "react-carplay",
-  "version": "1.0.0",
+  "version": "4.0.0-beta.2",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Rhys Morgan",
   "homepage": "https://www.electronjs.org",
   "scripts": {
     "format": "prettier --write .",
@@ -17,7 +17,8 @@
     "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "electron-vite build && electron-builder --mac --config",
-    "build:linux": "electron-vite build && electron-builder --linux --config"
+    "build:linux": "electron-vite build && electron-builder --linux --config",
+    "build:armLinux": "electron-vite build && electron-builder --linux AppImage --arm64 --armv7l --config"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",

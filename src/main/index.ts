@@ -6,7 +6,8 @@ import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-
+app.commandLine.appendSwitch('disable-webusb-security', 'true')
+console.log(app.commandLine.hasSwitch('disable-webusb-security'))
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -20,30 +21,51 @@ function createWindow(): void {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true,
-      nodeIntegrationInWorker: true
+      nodeIntegrationInWorker: true,
+      webSecurity: false
     }
   })
   app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
+  // mainWindow.webContents.session.setDevicePermissionHandler((details) => {
+  //   if (true) {
+  //     if (details.device.vendorId === 4884 && details.device.productId === 5408) {
+  //       // Always allow this type of device (this allows skipping the call to `navigator.hid.requestDevice` first)
+  //       return true
+  //     }
+  //   }
+  //   return false
+  // })
+
+  mainWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+
+      // Add logic here to determine if permission should be given to allow HID selection
+      return true
+  })
+
   mainWindow.webContents.session.setDevicePermissionHandler((details) => {
-    if (true) {
-      if (details.device.vendorId === 4884 && details.device.productId === 5408) {
-        // Always allow this type of device (this allows skipping the call to `navigator.hid.requestDevice` first)
-        return true
-      }
+    console.log("permission check", details)
+    if(details.device.vendorId === 4884) {
+      console.log('returning true')
+      return true
+    } else {
+      return false
     }
-    return false
+
   })
 
 
   mainWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
+    console.log("select devices")
     event.preventDefault()
     const selectedDevice = details.deviceList.find((device) => {
+      console.log("returning device", device)
       return device.vendorId === 4884 && device.productId === 5408
     })
+    console.log("check device callback", selec)
     callback(selectedDevice?.deviceId)
   })
-  app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+  // app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

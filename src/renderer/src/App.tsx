@@ -118,7 +118,7 @@ function App() {
   const checkDevice = useCallback(
     async (request: boolean = false) => {
       console.log(request)
-      const device = request ? await requestDevice() : await findDevice()
+      const device = request ? await findDevice() : await findDevice()
       console.log(device)
       if (device) {
         setNoDevice(false)
@@ -132,6 +132,7 @@ function App() {
 
   // usb connect/disconnect handling and device check
   useEffect(() => {
+    console.log("checking")
     navigator.usb.onconnect = async () => {
       checkDevice(true)
     }
