@@ -89,7 +89,7 @@ function createWindow(): void {
   mainWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
     event.preventDefault()
     const selectedDevice = details.deviceList.find((device) => {
-      return device.vendorId === 4884 && device.productId === 5408
+      return device.vendorId === 4884 && (device.productId === 5408 || device.productId === 5408)
     })
 
     callback(selectedDevice?.deviceId)
