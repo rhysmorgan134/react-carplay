@@ -23,6 +23,11 @@
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",
     "@electron-toolkit/utils": "^2.0.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.11",
+    "@mui/material": "^5.14.11",
     "buffer": "^6.0.3",
     "electron-is-dev": "^2.0.0",
     "electron-typescript-ipc": "^3.0.0",
@@ -32,8 +37,10 @@
     "pcm-player": "^0.0.16",
     "pcm-ringbuf-player": "^0.0.3",
     "react-loader-spinner": "^5.4.5",
+    "react-router-dom": "^6.16.0",
     "stream-browserify": "^3.0.0",
-    "usb": "^2.10.0"
+    "usb": "^2.10.0",
+    "vite-plugin-esmodule": "^1.5.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",

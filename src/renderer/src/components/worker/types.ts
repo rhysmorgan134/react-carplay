@@ -7,6 +7,7 @@ export type Command =
   | { type: 'start'; payload: Partial<DongleConfig> }
   | { type: 'touch'; payload: { x: number; y: number; action: TouchAction } }
   | { type: 'microphoneInput'; payload: Int16Array }
+  | { type: 'frame'}
 
 export interface CarPlayWorker
   extends Omit<Worker, 'postMessage' | 'onmessage'> {

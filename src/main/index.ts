@@ -1,18 +1,51 @@
-import { app, shell, BrowserWindow, session, systemPreferences } from 'electron'
+import { app, shell, BrowserWindow, session, systemPreferences, IpcMainEvent, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { DongleConfig, DEFAULT_CONFIG } from 'node-carplay/node'
+import * as fs from 'fs';
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
+const appPath: string = app.getAppPath()
+const configPath: string = appPath + '/config.json'
+let config: null | ExtraConfig
+
+export type ExtraConfig = DongleConfig & {
+  kiosk: boolean
+}
+
+const EXTRA_CONFIG: ExtraConfig = {
+  ...DEFAULT_CONFIG,
+  kiosk: true
+}
+
+fs.exists(configPath, (exists) => {
+    if(exists) {
+      config = JSON.parse(fs.readFileSync(configPath).toString())
+      console.log("config read")
+    } else {
+      fs.writeFileSync(configPath, JSON.stringify(EXTRA_CONFIG))
+      config = JSON.parse(fs.readFileSync(configPath).toString())
+      console.log("config created and read")
+    }
+})
+
+const handleSettingsReq = (_: IpcMainEvent ) => {
+  console.log("settings request")
+  mainWindow?.webContents.send('settings', config)
+}
+
+
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 app.commandLine.appendSwitch('disable-webusb-security', 'true')
 console.log(app.commandLine.hasSwitch('disable-webusb-security'))
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: config.width,
+    height: config.height,
+    kiosk: config.kiosk,
     show: false,
     frame: false,
     autoHideMenuBar: true,
@@ -44,9 +77,7 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.session.setDevicePermissionHandler((details) => {
-    console.log("permission check", details)
     if(details.device.vendorId === 4884) {
-      console.log('returning true')
       return true
     } else {
       return false
@@ -56,13 +87,11 @@ function createWindow(): void {
 
 
   mainWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
-    console.log("select devices")
     event.preventDefault()
     const selectedDevice = details.deviceList.find((device) => {
-      console.log("returning device", device)
       return device.vendorId === 4884 && device.productId === 5408
     })
-    console.log("check device callback", selec)
+
     callback(selectedDevice?.deviceId)
   })
   // app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
@@ -122,6 +151,10 @@ app.whenReady().then(() => {
     })
   })
 
+  ipcMain.on('getSettings', handleSettingsReq)
+
+  ipcMain.on('saveSettings', saveSettings)
+
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -137,6 +170,10 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
+
+const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
+  fs.writeFileSync(configPath, JSON.stringify(settings))
+}
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

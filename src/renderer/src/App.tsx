@@ -1,217 +1,82 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { RotatingLines } from 'react-loader-spinner'
-import image from './public/icon.png?asset'
-import './App.css'
-import {
-  findDevice,
-  requestDevice,
-  DongleConfig,
-  CommandMapping,
-} from 'node-carplay/web'
-import JMuxer from 'jmuxer'
-import { CarPlayWorker } from './worker/types'
-import useCarplayAudio from './useCarplayAudio'
-import { useCarplayTouch } from './useCarplayTouch'
+import React, { useEffect, useRef, useState } from "react";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { ExtraConfig } from "../../main";
+import Settings from "./components/Settings";
+import Info from "./components/Info";
+import Home from "./components/Home";
+import Nav from "./components/Nav";
+import Carplay from './components/Carplay'
+import { AudioData, VideoData } from 'node-carplay/web'
+
+// rm -rf node_modules/.vite; npm run dev
 
 const width = window.innerWidth
 const height = window.innerHeight
 
-const config: Partial<DongleConfig> = {
-  width,
-  height,
-  fps: 60,
-  mediaDelay: 0,
-}
 const RETRY_DELAY_MS = 5000
 
+
 function App() {
-  const [isPlugged, setPlugged] = useState(false)
-  const [noDevice, setNoDevice] = useState(false)
+  const [settings, setSettings] = useState<ExtraConfig | null>(null)
+  const intialized = useRef(false)
+  const intialized2 = useRef(false)
   const [receivingVideo, setReceivingVideo] = useState(false)
-  const [jmuxer, setJmuxer] = useState<JMuxer | null>(null)
-  const carplayWorker = useMemo(
-    () =>
-      new Worker(
-        new URL('./worker/carplay.ts', import.meta.url),{type: 'module'}
-      ) as CarPlayWorker,
-    [],
-  )
 
-  const { processAudio, startRecording, stopRecording } =
-    useCarplayAudio(carplayWorker)
 
-  // subscribe to worker messages
+  console.log("rendering")
+
   useEffect(() => {
-    carplayWorker.onmessage = ev => {
-      const { type } = ev.data
-      switch (type) {
-        case 'plugged':
-          setPlugged(true)
-          break
-        case 'unplugged':
-          setPlugged(false)
-          break
-        case 'video':
-          // if document is hidden we dont need to feed frames
-          if (!jmuxer || document.hidden) return
-          if (!receivingVideo) setReceivingVideo(true)
-          const { message: video } = ev.data
-          jmuxer.feed({
-            video: video.data,
-            duration: 0,
-          })
-          break
-        case 'audio':
-          const { message: audio } = ev.data
-          processAudio(audio)
-          break
-        case 'media':
-          //TODO: implement
-          break
-        case 'command':
-          const {
-            message: { value },
-          } = ev.data
-          switch (value) {
-            case CommandMapping.startRecordAudio:
-              startRecording()
-              break
-            case CommandMapping.stopRecordAudio:
-              stopRecording()
-              break
-          }
-          break
-        case 'failure':
-          console.error(
-            `Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`,
-          )
-          setTimeout(() => {
-            window.location.reload()
-          }, RETRY_DELAY_MS)
-          break
-      }
+    if(!intialized.current) {
+      intialized.current = true
+      window.electronAPI.settings((event, value: ExtraConfig) => {
+        console.log("setting settings")
+        setSettings(value)
+      })
     }
-  }, [
-    carplayWorker,
-    jmuxer,
-    processAudio,
-    receivingVideo,
-    startRecording,
-    stopRecording,
-  ])
 
-  // video init
+  }, [window.electronAPI]);
+
   useEffect(() => {
-    const jmuxer = new JMuxer({
-      node: 'video',
-      mode: 'video',
-      fps: config.fps,
-      flushingTime: 0,
-      debug: false,
-    })
-    setJmuxer(jmuxer)
-    return () => {
-      jmuxer.destroy()
+    if(!intialized2.current) {
+      window.electronAPI.getSettings()
     }
-  }, [])
+  }, [window.electronAPI]);
 
-  const checkDevice = useCallback(
-    async (request: boolean = false) => {
-      console.log(request)
-      const device = request ? await findDevice() : await findDevice()
-      console.log(device)
-      if (device) {
-        setNoDevice(false)
-        carplayWorker.postMessage({ type: 'start', payload: config })
-      } else {
-        setNoDevice(true)
-      }
-    },
-    [carplayWorker],
-  )
 
-  // usb connect/disconnect handling and device check
-  useEffect(() => {
-    console.log("checking")
-    navigator.usb.onconnect = async () => {
-      checkDevice(true)
-    }
 
-    navigator.usb.ondisconnect = async () => {
-      const device = await findDevice()
-      if (!device) {
-        carplayWorker.postMessage({ type: 'stop' })
-        setNoDevice(true)
-      }
-    }
 
-    checkDevice(true)
-  }, [carplayWorker, checkDevice])
+  const recvVideo = (video: VideoData) => {
+    console.log('video', video)
+  }
 
-  const onClick = useCallback(() => {
-    checkDevice(true)
-  }, [checkDevice])
+  const recvAudio = (audio: AudioData) => {
+    console.log('video', audio)
+  }
 
-  const sendTouchEvent = useCarplayTouch(carplayWorker, width, height)
+  const setPlugged = (plugged: boolean) => {
+    console.log("plugged", plugged)
+  }
 
-  const isLoading = !noDevice && !receivingVideo
+
 
   return (
-    <div
-      style={{ height: '100%', touchAction: 'none' }}
-      id={'main'}
-      className="App"
-    >
-      {(noDevice || isLoading) && (
-        <div
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          {noDevice && (
-            <button onClick={onClick} rel="noopener noreferrer">
-              Plug-In Carplay Dongle and Press
-            </button>
-          )}
-          {isLoading && (
-            <RotatingLines
-              strokeColor="grey"
-              strokeWidth="5"
-              animationDuration="0.75"
-              width="96"
-              visible={true}
-            />
-          )}
-        </div>
-      )}
+    <Router>
       <div
-        id="videoContainer"
-        onPointerDown={sendTouchEvent}
-        onPointerMove={sendTouchEvent}
-        onPointerUp={sendTouchEvent}
-        onPointerCancel={sendTouchEvent}
-        onPointerOut={sendTouchEvent}
-        style={{
-          height: '100%',
-          width: '100%',
-          padding: 0,
-          margin: 0,
-          display: 'flex',
-        }}
+        style={{ height: '100%', touchAction: 'none' }}
+        id={'main'}
+        className="App"
+
       >
-        <video
-          id="video"
-          style={isPlugged ? { height: '100%' } : undefined}
-          autoPlay
-          muted
-        />
+        <Nav receivingVideo={receivingVideo}/>
+        {settings ? <Carplay  receivingVideo={receivingVideo} setReceivingVideo={setReceivingVideo} settings={settings}/> : null}
+        <Routes>
+          <Route path={"/"} element={<Home />} />
+          <Route path={"/settings"} element={<Settings settings={settings!}/>} />
+          <Route path={"/info"} element={<Info />} />
+        </Routes>
       </div>
-    </div>
+    </Router>
+
   )
 }
 

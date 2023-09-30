@@ -32,6 +32,7 @@ export const useCarplayTouch = (
       }
 
       const { offsetX: x, offsetY: y } = e.nativeEvent
+      console.log({ x: x / width, y: y / height, action })
       worker.postMessage({
         type: 'touch',
         payload: { x: x / width, y: y / height, action },

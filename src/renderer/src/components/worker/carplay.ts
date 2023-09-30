@@ -6,7 +6,7 @@ import CarplayWeb, {
   SendTouch,
   findDevice
 } from 'node-carplay/web'
-import { Command } from '../components/worker/types'
+import { Command } from './types'
 
 let carplayWeb: CarplayWeb | null = null
 let config: Partial<DongleConfig> | null = null
@@ -29,6 +29,7 @@ onmessage = async (event: MessageEvent<Command>) => {
       config = event.data.payload
       const device = await findDevice()
       if (device) {
+        console.log("starting device")
         carplayWeb = new CarplayWeb(config)
         carplayWeb.onmessage = handleMessage
         carplayWeb.start(device)
@@ -53,6 +54,7 @@ onmessage = async (event: MessageEvent<Command>) => {
       break
     case 'frame':
       if (carplayWeb) {
+        console.log("requesting frame")
         const data = new SendCommand('frame')
         carplayWeb.dongleDriver.send(data)
       }

@@ -39,6 +39,7 @@
 //
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from '@electron-toolkit/preload'
+import { ExtraConfig } from "../main";
 
 // Custom APIs for renderer
 const api = {}
@@ -51,12 +52,9 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('electronAPI', {
-      videoData: (callback: Function) => ipcRenderer.on('videoData', callback),
-      removeVideoData: (callback: Function) => ipcRenderer.removeAllListeners('videoData'),
-      audioData: (callback: Function) => ipcRenderer.on('audioData', callback),
-      status: (callback: Function) => ipcRenderer.on('status', callback),
-      getStatus: () => ipcRenderer.invoke('getStatus'),
-      sendTouch: (data: { type: number; x: number; y: number }) => ipcRenderer.invoke('sendTouch', data)
+      settings: (callback: Function) => ipcRenderer.on('settings', callback),
+      getSettings: () => ipcRenderer.send('getSettings'),
+      saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings)
     })
   } catch (error) {
     console.error(error)
