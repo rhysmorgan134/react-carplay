@@ -1,5 +1,5 @@
 import { ExtraConfig } from "../../../main";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -9,7 +9,12 @@ import {
   Checkbox,
   FormGroup,
   FormControl,
-  FormLabel, Button
+  FormLabel,
+  Button,
+  Typography,
+  Select,
+  InputLabel,
+  MenuItem, SelectChangeEvent
 } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -17,7 +22,9 @@ interface SettingsProps {
   settings: ExtraConfig
 }
 function Settings({ settings }: SettingsProps) {
-  const [activeSettings, setActiveSettings] = useState(settings)
+  const [activeSettings, setActiveSettings] = useState<ExtraConfig>(settings)
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([])
+  const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([])
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -105,22 +112,90 @@ function Settings({ settings }: SettingsProps) {
       )
     }
   }
+  const renderCameras = () => {
+    return  (
+      <Grid xs={6}>
+        <FormControl fullWidth>
+          <InputLabel id={'cameraSelectLabel'}>CAMERA</InputLabel>
+          <Select
+            labelId={"cameraSelectLabel"}
+            id={"cameraSelect"}
+            value={activeSettings.camera}
+            autoWidth
+            onChange={(event: SelectChangeEvent) => {
+              settingsChange('camera', event.target.value)
+            }}
+          >
+            {cameras.map((camera) => {
+              return <MenuItem value={camera.deviceId}>{camera.label}</MenuItem>
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
+    )
+  }
+
+  const renderMicrophones = () => {
+    return  (
+      <Grid xs={6}>
+        <FormControl fullWidth>
+          <InputLabel id={'cameraSelectLabel'}>MICROPHONE</InputLabel>
+          <Select
+            labelId={"cameraSelectLabel"}
+            id={"cameraSelect"}
+            value={activeSettings.microphone}
+            autoWidth
+            onChange={(event: SelectChangeEvent) => {
+              settingsChange('microphone', event.target.value)
+            }}
+          >
+            {microphones.map((microphone) => {
+              return <MenuItem value={microphone.deviceId}>{microphone.label}</MenuItem>
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
+    )
+  }
+
+  useEffect(() => {
+    if(!navigator.mediaDevices?.enumerateDevices) {
+      setMediaDevices([])
+    } else {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const microphones: MediaDeviceInfo[] = []
+          const webcams: MediaDeviceInfo[] = []
+          devices.forEach((device) => {
+            if(device.kind === "audioinput") {
+              microphones.push(device)
+            } else if (device.kind === "videoinput") {
+              webcams.push(device)
+            }
+          })
+          console.log(webcams, microphones)
+          setCameras(webcams)
+          setMicrophones(microphones)
+        })
+    }
+  }, []);
   const renderSettings = () => {
     console.log(activeSettings)
     return (
       <Grid container spacing={2}>
         {Object.keys(activeSettings).map((k) => {
-        return renderInput[k]?.()
-        })
-      }
+          return renderInput[k]?.()
+        })}
+        {cameras.length > 0 ? renderCameras() : null}
+        {microphones.length > 0 ? renderMicrophones() : null}
         <Grid xs={12}>
           <Box>
             <Button onClick={() => window.electronAPI.saveSettings(activeSettings)}>SAVE</Button>
+
           </Box>
         </Grid>
       </Grid>
-
-
     )
   }
 

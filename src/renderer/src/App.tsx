@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Nav from "./components/Nav";
 import Carplay from './components/Carplay'
 import { AudioData, VideoData } from 'node-carplay/web'
+import Camera from './components/Camera'
 
 // rm -rf node_modules/.vite; npm run dev
 
@@ -67,12 +68,13 @@ function App() {
         className="App"
 
       >
-        <Nav receivingVideo={receivingVideo}/>
+        <Nav receivingVideo={receivingVideo} settings={settings}/>
         {settings ? <Carplay  receivingVideo={receivingVideo} setReceivingVideo={setReceivingVideo} settings={settings}/> : null}
         <Routes>
           <Route path={"/"} element={<Home />} />
           <Route path={"/settings"} element={<Settings settings={settings!}/>} />
           <Route path={"/info"} element={<Info />} />
+          <Route path={"/camera"} element={<Camera settings={settings!}/>} />
         </Routes>
       </div>
     </Router>

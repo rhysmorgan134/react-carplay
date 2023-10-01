@@ -7,17 +7,21 @@ import * as fs from 'fs';
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
-const appPath: string = app.getAppPath()
+const appPath: string = app.getPath('userData')
 const configPath: string = appPath + '/config.json'
 let config: null | ExtraConfig
 
 export type ExtraConfig = DongleConfig & {
-  kiosk: boolean
+  kiosk: boolean,
+  camera: string,
+  microphone: string
 }
 
 const EXTRA_CONFIG: ExtraConfig = {
   ...DEFAULT_CONFIG,
-  kiosk: true
+  kiosk: true,
+  camera: '',
+  microphone: ''
 }
 
 fs.exists(configPath, (exists) => {

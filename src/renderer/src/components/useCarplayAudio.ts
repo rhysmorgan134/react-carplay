@@ -14,7 +14,7 @@ import { CarPlayWorker } from './worker/types'
 const defaultAudioVolume = 1
 const defaultNavVolume = 0.5
 
-const useCarplayAudio = (worker: CarPlayWorker) => {
+const useCarplayAudio = (worker: CarPlayWorker, microphone: string | null = null) => {
   const [mic, setMic] = useState<WebMicrophone | null>(null)
   const [audioPlayers] = useState(new Map<AudioFormat, PcmPlayer>())
 
@@ -60,7 +60,7 @@ const useCarplayAudio = (worker: CarPlayWorker) => {
     const initMic = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
+          audio: {deviceId: microphone, noiseSuppression: true, echoCancellation: true},
         })
         const mic = new WebMicrophone(mediaStream)
         mic.on('data', payload => {
@@ -79,7 +79,7 @@ const useCarplayAudio = (worker: CarPlayWorker) => {
       }
     }
 
-    initMic()
+    if (microphone) initMic()
 
     return () => {
       audioPlayers.forEach(p => p.stop())

@@ -4,9 +4,10 @@ import Tab from '@mui/material/Tab';
 import PhoneIcon from '@mui/icons-material/Phone';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
+import CameraIcon from '@mui/icons-material/Camera';
 import { Link, useLocation } from "react-router-dom";
 
-export default function Nav({ receivingVideo }) {
+export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
   const { pathname } = useLocation()
 
@@ -19,6 +20,7 @@ export default function Nav({ receivingVideo }) {
       <Tab icon={<PhoneIcon />} to={'/'} component={Link}/>
       <Tab icon={<SettingsIcon />} to={'/settings'}  component={Link}/>
       <Tab icon={<InfoIcon />} to={'/info'} component={Link}/>
+      {settings?.camera !== '' ? <Tab icon={<CameraIcon />} to={'/camera'} component={Link}/> : null}
     </Tabs>
   );
 }

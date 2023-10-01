@@ -49,7 +49,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }) {
     []
   )
 
-  const { processAudio, startRecording, stopRecording } = useCarplayAudio(carplayWorker)
+  const { processAudio, startRecording, stopRecording } = useCarplayAudio(carplayWorker, settings.microphone)
 
   // subscribe to worker messages
   useEffect(() => {
