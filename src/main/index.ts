@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { DongleConfig, DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
 import {Stream} from 'socketmost/dist/modules/Messages'
+import { PiMost } from './PiMost'
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
@@ -34,7 +35,7 @@ const EXTRA_CONFIG: ExtraConfig = {
   most: {}
 }
 
-
+let piMost: PiMost | null
 
 fs.exists(configPath, (exists) => {
     if(exists) {
@@ -44,6 +45,9 @@ fs.exists(configPath, (exists) => {
       fs.writeFileSync(configPath, JSON.stringify(EXTRA_CONFIG))
       config = JSON.parse(fs.readFileSync(configPath).toString())
       console.log("config created and read")
+    }
+    if(config!.most) {
+      piMost = new PiMost()
     }
 })
 
@@ -194,7 +198,9 @@ const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
 }
 
 const startMostStream = (_: IpcMainEvent, most: Stream) => {
-  console.log("most streaming request", most)
+  if(piMost) {
+    piMost.stream(most)
+  }
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
