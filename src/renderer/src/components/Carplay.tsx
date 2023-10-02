@@ -58,6 +58,9 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
       switch (type) {
         case 'plugged':
           setPlugged(true)
+          if(settings.piMost) {
+            window.electronAPI.stream(settings.most)
+          }
           break
         case 'unplugged':
           setPlugged(false)
