@@ -11,7 +11,7 @@ export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
   const { pathname } = useLocation()
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

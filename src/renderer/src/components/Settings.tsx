@@ -1,5 +1,5 @@
 import { ExtraConfig } from "../../../main";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -11,20 +11,37 @@ import {
   FormControl,
   FormLabel,
   Button,
-  Typography,
   Select,
   InputLabel,
-  MenuItem, SelectChangeEvent
-} from "@mui/material";
+  MenuItem,
+  SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Slide
+} from '@mui/material'
 import Grid from '@mui/material/Unstable_Grid2';
+import MostStream from './MostStream'
+import { TransitionProps } from '@mui/material/transitions/transition'
 
 interface SettingsProps {
   settings: ExtraConfig
 }
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 function Settings({ settings }: SettingsProps) {
   const [activeSettings, setActiveSettings] = useState<ExtraConfig>(settings)
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([])
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([])
+  const [openStream, setOpenStream] = useState<boolean>(false)
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -65,6 +82,23 @@ function Settings({ settings }: SettingsProps) {
           <FormControl>
             <FormControlLabel id={'kiosk'}  label={'KIOSK'} control={<Checkbox checked={activeSettings.kiosk} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               settingsChange('kiosk', event.target.checked)
+            }}/>} />
+          </FormControl>
+        </Grid>
+      )
+    },
+    piMost: () => {
+      return (
+        <Grid xs={4}>
+          <FormControl>
+            <FormControlLabel id={'pimost'}  label={'PIMOST'} control={<Checkbox checked={activeSettings.piMost} onChange={(_: React.ChangeEvent<HTMLInputElement>) => {
+              // settingsChange('piMost', event.target.checked)
+              if(activeSettings.piMost) {
+                settingsChange('piMost', false)
+                settingsChange('most', {})
+              } else {
+                setOpenStream(true)
+              }
             }}/>} />
           </FormControl>
         </Grid>
@@ -160,7 +194,8 @@ function Settings({ settings }: SettingsProps) {
 
   useEffect(() => {
     if(!navigator.mediaDevices?.enumerateDevices) {
-      setMediaDevices([])
+      setMicrophones([])
+      setCameras([])
     } else {
       navigator.mediaDevices
         .enumerateDevices()
@@ -187,14 +222,27 @@ function Settings({ settings }: SettingsProps) {
         {Object.keys(activeSettings).map((k) => {
           return renderInput[k]?.()
         })}
-        {cameras.length > 0 ? renderCameras() : null}
-        {microphones.length > 0 ? renderMicrophones() : null}
-        <Grid xs={12}>
+        <Grid xs={12} container>
+          {cameras.length > 0 ? renderCameras() : null}
+          {microphones.length > 0 ? renderMicrophones() : null}
+        </Grid>
+        <Grid xs={12} >
           <Box>
             <Button onClick={() => window.electronAPI.saveSettings(activeSettings)}>SAVE</Button>
-
           </Box>
         </Grid>
+        <Dialog
+        open={openStream}
+        TransitionComponent={Transition}
+        keepMounted
+        PaperProps={{style: {minHeight: '80%'}}}
+        onClose={() => setOpenStream(false)}
+        >
+          <DialogTitle>{'PiMost Stream Settings'}</DialogTitle>
+          <DialogContent >
+            <MostStream setSettings={settingsChange} setOpenStream={setOpenStream}/>
+          </DialogContent>
+        </Dialog>
       </Grid>
     )
   }

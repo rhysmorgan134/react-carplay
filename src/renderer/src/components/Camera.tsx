@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {Typography} from "@mui/material";
 
 const Webcam = ({settings}) => {
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [cameraFound, setCameraFound] = useState(false)
   console.log(settings)
 
@@ -16,7 +16,7 @@ const Webcam = ({settings}) => {
       .then(stream => {
         console.log(stream)
         setCameraFound(true)
-        let video = videoRef.current;
+        let video = videoRef.current!;
         video.srcObject = stream;
         video.play();
       })

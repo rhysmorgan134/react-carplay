@@ -4,7 +4,6 @@ import { RotatingLines } from 'react-loader-spinner'
 import {
   findDevice,
   requestDevice,
-  DongleConfig,
   CommandMapping,
 } from 'node-carplay/web'
 import JMuxer from 'jmuxer'
@@ -12,19 +11,20 @@ import { CarPlayWorker } from './worker/types'
 import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
+import { ExtraConfig } from "../../../main";
 
 const width = window.innerWidth
 const height = window.innerHeight
 
-const config: Partial<DongleConfig> = {
-  width,
-  height,
-  fps: 60,
-  mediaDelay: 0,
-}
 const RETRY_DELAY_MS = 5000
 
-function Carplay({ receivingVideo, setReceivingVideo, settings }) {
+interface CarplayProps {
+  receivingVideo: boolean
+  setReceivingVideo: (receivingVideo: boolean) => void
+  settings: ExtraConfig
+}
+
+function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) {
   const [isPlugged, setPlugged] = useState(false)
   const [noDevice, setNoDevice] = useState(false)
   // const [receivingVideo, setReceivingVideo] = useState(false)
@@ -34,8 +34,8 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }) {
   const mainElem = useRef<HTMLDivElement>(null)
   const config = {
     fps: settings.fps,
-    width: settings.width,
-    height: settings.height,
+    width: width,
+    height: height,
     mediaDelay: settings.mediaDelay
   }
   // const pathname = "/"
@@ -65,7 +65,12 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }) {
         case 'video':
           // if document is hidden we dont need to feed frames
           if (!jmuxer || document.hidden) return
-          if (!receivingVideo) setReceivingVideo(true)
+          if (!receivingVideo) {
+            setReceivingVideo(true)
+            if(settings.piMost) {
+              window.electronAPI.stream(settings.most)
+            }
+          }
           const { message: video } = ev.data
           jmuxer.feed({
             video: video.data,

@@ -60,7 +60,7 @@ const useCarplayAudio = (worker: CarPlayWorker, microphone: string | null = null
     const initMic = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: {deviceId: microphone, noiseSuppression: true, echoCancellation: true},
+          audio: {deviceId: microphone!, noiseSuppression: true, echoCancellation: true},
         })
         const mic = new WebMicrophone(mediaStream)
         mic.on('data', payload => {

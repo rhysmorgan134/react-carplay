@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
-import { ExtraConfig } from "../../main";
+import { ExtraConfig} from "../../main";
 import Settings from "./components/Settings";
 import Info from "./components/Info";
 import Home from "./components/Home";

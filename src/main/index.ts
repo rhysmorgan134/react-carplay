@@ -4,25 +4,37 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { DongleConfig, DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
+import {Stream} from 'socketmost/dist/modules/Messages'
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
 const appPath: string = app.getPath('userData')
 const configPath: string = appPath + '/config.json'
+console.log(configPath)
 let config: null | ExtraConfig
+
+export type Most = {
+  stream?: Stream
+}
 
 export type ExtraConfig = DongleConfig & {
   kiosk: boolean,
   camera: string,
-  microphone: string
+  microphone: string,
+  piMost: boolean,
+  most?: Most
 }
 
 const EXTRA_CONFIG: ExtraConfig = {
   ...DEFAULT_CONFIG,
   kiosk: true,
   camera: '',
-  microphone: ''
+  microphone: '',
+  piMost: false,
+  most: {}
 }
+
+
 
 fs.exists(configPath, (exists) => {
     if(exists) {
@@ -159,6 +171,8 @@ app.whenReady().then(() => {
 
   ipcMain.on('saveSettings', saveSettings)
 
+  ipcMain.on('startStream', startMostStream)
+
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -177,6 +191,10 @@ app.whenReady().then(() => {
 
 const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
   fs.writeFileSync(configPath, JSON.stringify(settings))
+}
+
+const startMostStream = (_: IpcMainEvent, most: Stream) => {
+  console.log("most streaming request", most)
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

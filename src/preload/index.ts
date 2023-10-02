@@ -40,6 +40,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from '@electron-toolkit/preload'
 import { ExtraConfig } from "../main";
+import { Stream } from "socketmost/dist/modules/Messages";
 
 // Custom APIs for renderer
 const api = {}
@@ -54,7 +55,8 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electronAPI', {
       settings: (callback: Function) => ipcRenderer.on('settings', callback),
       getSettings: () => ipcRenderer.send('getSettings'),
-      saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings)
+      saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings),
+      stream: (stream: Stream) => ipcRenderer.send('startStream', stream)
     })
   } catch (error) {
     console.error(error)
