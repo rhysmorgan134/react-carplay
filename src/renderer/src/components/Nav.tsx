@@ -6,6 +6,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
 import CameraIcon from '@mui/icons-material/Camera';
 import { Link, useLocation } from "react-router-dom";
+import SvgIcon from '@mui/material/SvgIcon'
+import PiMostConn from './PiMostConn.svg?react'
 
 export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
@@ -16,11 +18,23 @@ export default function Nav({ receivingVideo, settings }) {
   };
 
   return (
-    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={receivingVideo === true && pathname === '/' ? {minHeight: '0px', height: '0px'} : {}}>
-      <Tab icon={<PhoneIcon />} to={'/'} component={Link}/>
-      <Tab icon={<SettingsIcon />} to={'/settings'}  component={Link}/>
-      <Tab icon={<InfoIcon />} to={'/info'} component={Link}/>
-      {settings?.camera !== '' ? <Tab icon={<CameraIcon />} to={'/camera'} component={Link}/> : null}
+    <Tabs
+      value={value}
+      onChange={handleChange}
+      aria-label="icon label tabs example"
+      centered
+      sx={receivingVideo === true && pathname === '/' ? { minHeight: '0px', height: '0px' } : {}}
+    >
+      <Tab icon={<PhoneIcon />} to={'/'} component={Link} />
+      <Tab icon={<SettingsIcon />} to={'/settings'} component={Link} />
+      <Tab icon={<InfoIcon />} to={'/info'} component={Link} />
+      {/*<SvgIcon >*/}
+      {/*  <PiMostConn />*/}
+      {/*</SvgIcon>*/}
+      {settings?.camera !== '' ? (
+        <Tab icon={<CameraIcon />} to={'/camera'} component={Link} />
+      ) : null}
+      {/*<PiMostConn style={{height: '48px', width: '90px'}} />*/}
     </Tabs>
-  );
+  )
 }

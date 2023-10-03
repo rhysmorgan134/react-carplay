@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { RotatingLines } from 'react-loader-spinner'
 //import './App.css'
 import {
@@ -12,6 +12,7 @@ import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig } from "../../../main";
+import { InitEvent, RenderEvent } from './worker/renderer/RenderEvents'
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -32,14 +33,38 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const mainElem = useRef<HTMLDivElement>(null)
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
+    null,
+  )
+
+  const renderWorker = useMemo(() => {
+    if (!canvasElement) return
+
+    const worker = new Worker(
+      new URL('./worker/renderer/Render.worker.ts', import.meta.url), {
+        type: 'module'
+      }
+    )
+    const canvas = canvasElement.transferControlToOffscreen()
+    worker.postMessage(new InitEvent(canvas), [canvas])
+    return worker
+  }, [canvasElement])
+
+  useLayoutEffect(() => {
+    if (canvasRef.current) {
+      setCanvasElement(canvasRef.current)
+    }
+  }, [])
+
   const config = {
     fps: settings.fps,
     width: width,
     height: height,
     mediaDelay: settings.mediaDelay
   }
-  // const pathname = "/"
-  console.log(pathname)
 
   const carplayWorker = useMemo(
     () =>
@@ -50,6 +75,13 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
   )
 
   const { processAudio, startRecording, stopRecording } = useCarplayAudio(carplayWorker, settings.microphone)
+
+  const clearRetryTimeout = useCallback(() => {
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current)
+      retryTimeoutRef.current = null
+    }
+  }, [])
 
   // subscribe to worker messages
   useEffect(() => {
@@ -67,20 +99,19 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
           break
         case 'video':
           // if document is hidden we dont need to feed frames
-          if (!jmuxer || document.hidden) return
+          if (!renderWorker || document.hidden) return
           if (!receivingVideo) {
             setReceivingVideo(true)
-            if(settings.piMost) {
-              window.electronAPI.stream(settings.most)
-            }
           }
+          clearRetryTimeout()
           const { message: video } = ev.data
-          jmuxer.feed({
-            video: video.data,
-            duration: 0
-          })
+          renderWorker.postMessage(new RenderEvent(video.data), [
+            video.data.buffer,
+          ])
           break
         case 'audio':
+          clearRetryTimeout()
+
           const { message: audio } = ev.data
           processAudio(audio)
           break
@@ -103,29 +134,19 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
           }
           break
         case 'failure':
-          console.error(`Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`)
-          setTimeout(() => {
-            window.location.reload()
-          }, RETRY_DELAY_MS)
+          if (retryTimeoutRef.current == null) {
+            console.error(
+              `Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`,
+            )
+            retryTimeoutRef.current = setTimeout(() => {
+              window.location.reload()
+            }, RETRY_DELAY_MS)
+          }
           break
       }
     }
-  }, [carplayWorker, jmuxer, processAudio, receivingVideo, startRecording, stopRecording])
+  }, [carplayWorker, clearRetryTimeout, processAudio, receivingVideo, startRecording, stopRecording, renderWorker])
 
-  // video init
-  useEffect(() => {
-    const jmuxer = new JMuxer({
-      node: 'video',
-      mode: 'video',
-      fps: config.fps,
-      flushingTime: 0,
-      debug: false
-    })
-    setJmuxer(jmuxer)
-    return () => {
-      jmuxer.destroy()
-    }
-  }, [])
 
   useEffect(() => {
     const element = mainElem?.current
@@ -144,7 +165,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
     async (request: boolean = false) => {
       const device = request ? await requestDevice() : await findDevice()
       if (device) {
-        console.log('starting in check')
+        console.log('starting in check', request)
         setNoDevice(false)
         carplayWorker.postMessage({ type: 'start', payload: config })
       } else {
@@ -168,7 +189,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
       }
     }
 
-    //checkDevice()
+    // checkDevice()
   }, [carplayWorker, checkDevice])
 
   // const onClick = useCallback(() => {
@@ -228,7 +249,11 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
           display: 'flex'
         }}
       >
-        <video id="video" style={isPlugged ? { height: '100%' } : undefined} autoPlay muted />
+        <canvas
+          ref={canvasRef}
+          id="video"
+          style={isPlugged ? { height: '100%' } : { display: 'none' }}
+        />
       </div>
     </div>
   )
