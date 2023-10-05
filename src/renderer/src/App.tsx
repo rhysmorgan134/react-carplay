@@ -15,6 +15,9 @@ function App() {
   const intialized = useRef(false)
   const intialized2 = useRef(false)
   const [receivingVideo, setReceivingVideo] = useState(false)
+  const [commandCounter, setCommandCounter] = useState(0)
+  const [keyCommand, setKeyCommand] = useState('')
+  const [key, setKey] = useState('')
 
 
   console.log("rendering")
@@ -29,6 +32,27 @@ function App() {
     }
 
   }, [window.api]);
+
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [settings]);
+
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    console.log(event.code)
+    if(Object.values(settings.bindings).includes(event.code)) {
+      let action = Object.keys(settings.bindings).find(key =>
+        settings.bindings[key] === event.code
+      )
+      if(action !== undefined) {
+        setKeyCommand(action)
+        setCommandCounter(prev => prev +1)
+      }
+    }
+  }
 
   useEffect(() => {
     if(!intialized2.current) {
@@ -45,7 +69,7 @@ function App() {
 
       >
         <Nav receivingVideo={receivingVideo} settings={settings}/>
-        {settings ? <Carplay  receivingVideo={receivingVideo} setReceivingVideo={setReceivingVideo} settings={settings}/> : null}
+        {settings ? <Carplay  receivingVideo={receivingVideo} setReceivingVideo={setReceivingVideo} settings={settings} command={keyCommand} commandCounter={commandCounter}/> : null}
         <Routes>
           <Route path={"/"} element={<Home />} />
           <Route path={"/settings"} element={<Settings settings={settings!}/>} />

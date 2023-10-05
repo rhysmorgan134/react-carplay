@@ -21,10 +21,12 @@ const RETRY_DELAY_MS = 5000
 interface CarplayProps {
   receivingVideo: boolean
   setReceivingVideo: (receivingVideo: boolean) => void
-  settings: ExtraConfig
+  settings: ExtraConfig,
+  command: string,
+  commandCounter: number
 }
 
-function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) {
+function Carplay({ receivingVideo, setReceivingVideo, settings, command, commandCounter }: CarplayProps) {
   const [isPlugged, setPlugged] = useState(false)
   const [noDevice, setNoDevice] = useState(false)
   // const [receivingVideo, setReceivingVideo] = useState(false)
@@ -136,6 +138,10 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
       observer.disconnect()
     }
   }, []);
+
+  useEffect(() => {
+    carplayWorker.postMessage({type: 'keyCommand', command: command})
+  }, [commandCounter]);
 
   const checkDevice = useCallback(
     async (request: boolean = false) => {

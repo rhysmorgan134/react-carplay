@@ -58,6 +58,12 @@ onmessage = async (event: MessageEvent<Command>) => {
         const data = new SendCommand('frame')
         carplayWeb.dongleDriver.send(data)
       }
+      break
+    case 'keyCommand':
+      if(carplayWeb) {
+        const data = new SendCommand(event.data.command)
+        carplayWeb.dongleDriver.send(data)
+      }
   }
 }
 

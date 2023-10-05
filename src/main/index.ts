@@ -6,7 +6,7 @@ import { DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
 import {Stream} from 'socketmost/dist/modules/Messages'
 import { PiMost } from './PiMost'
-import { ExtraConfig } from "./Globals";
+import { ExtraConfig, KeyBindings } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
@@ -15,6 +15,18 @@ const configPath: string = appPath + '/config.json'
 console.log(configPath)
 let config: null | ExtraConfig
 
+const DEFAULT_BINDINGS: KeyBindings = {
+  left: 'ArrowLeft',
+  right: 'ArrowRight',
+  selectDown: 'Space',
+  back: 'Backspace',
+  down: 'ArrowDown',
+  home: 'KeyH',
+  play: 'KeyP',
+  pause: 'KeyO',
+  next: 'KeyM',
+  prev: 'KeyN'
+}
 
 const EXTRA_CONFIG: ExtraConfig = {
   ...DEFAULT_CONFIG,
@@ -22,6 +34,7 @@ const EXTRA_CONFIG: ExtraConfig = {
   camera: '',
   microphone: '',
   piMost: false,
+  bindings: DEFAULT_BINDINGS,
   most: {}
 }
 

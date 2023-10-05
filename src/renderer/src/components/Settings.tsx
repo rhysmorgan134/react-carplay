@@ -23,6 +23,7 @@ import {
 import Grid from '@mui/material/Unstable_Grid2';
 import MostStream from './MostStream'
 import { TransitionProps } from '@mui/material/transitions/transition'
+import { KeyBindings } from "./KeyBindings";
 
 interface SettingsProps {
   settings: ExtraConfig
@@ -42,6 +43,7 @@ function Settings({ settings }: SettingsProps) {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([])
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([])
   const [openStream, setOpenStream] = useState<boolean>(false)
+  const [openBindings, setOpenBindings] = useState<boolean>(false)
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -229,6 +231,7 @@ function Settings({ settings }: SettingsProps) {
         <Grid xs={12} >
           <Box>
             <Button onClick={() => window.api.saveSettings(activeSettings)}>SAVE</Button>
+            <Button onClick={() => setOpenBindings(true)}>BINDINGS</Button>
           </Box>
         </Grid>
         <Dialog
@@ -241,6 +244,18 @@ function Settings({ settings }: SettingsProps) {
           <DialogTitle>{'PiMost Stream Settings'}</DialogTitle>
           <DialogContent >
             <MostStream setSettings={settingsChange} setOpenStream={setOpenStream}/>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={openBindings}
+          TransitionComponent={Transition}
+          keepMounted
+          PaperProps={{style: {minHeight: '80%', minWidth: '80%'}}}
+          onClose={() => setOpenBindings(false)}
+        >
+          <DialogTitle>{'KeyBindings'}</DialogTitle>
+          <DialogContent >
+            <KeyBindings settings={activeSettings} updateKey={settingsChange}/>
           </DialogContent>
         </Dialog>
       </Grid>
