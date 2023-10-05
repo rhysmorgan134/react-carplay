@@ -33,7 +33,7 @@
     "electron-typescript-ipc": "^3.0.0",
     "events": "^3.3.0",
     "jmuxer": "^2.0.5",
-    "node-carplay": "github:rhysmorgan134/node-CarPlay",
+    "node-carplay": "^4.0.0",
     "pcm-player": "^0.0.16",
     "pcm-ringbuf-player": "^0.0.3",
     "react-loader-spinner": "^5.4.5",
@@ -63,8 +63,7 @@
     "react-dom": "^18.2.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "typescript": "^5.1.6",
-    "vite": "^4.4.9",
-    "vite-plugin-svgr": "^4.1.0"
+    "vite": "^4.4.9"
   },
   "optionalDependencies": {
     "socketcan": "^4.0.4"

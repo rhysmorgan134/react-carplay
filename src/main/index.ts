@@ -47,7 +47,7 @@ fs.exists(configPath, (exists) => {
       console.log("config created and read")
     }
     if(config!.most) {
-      // piMost = new PiMost()
+      piMost = new PiMost()
     }
 })
 
