@@ -2,10 +2,11 @@ import { app, shell, BrowserWindow, session, systemPreferences, IpcMainEvent, ip
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { DongleConfig, DEFAULT_CONFIG } from 'node-carplay/node'
+import { DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
 import {Stream} from 'socketmost/dist/modules/Messages'
 import { PiMost } from './PiMost'
+import { ExtraConfig } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
 let mainWindow: BrowserWindow
@@ -14,17 +15,6 @@ const configPath: string = appPath + '/config.json'
 console.log(configPath)
 let config: null | ExtraConfig
 
-export type Most = {
-  stream?: Stream
-}
-
-export type ExtraConfig = DongleConfig & {
-  kiosk: boolean,
-  camera: string,
-  microphone: string,
-  piMost: boolean,
-  most?: Most
-}
 
 const EXTRA_CONFIG: ExtraConfig = {
   ...DEFAULT_CONFIG,
@@ -47,7 +37,7 @@ fs.exists(configPath, (exists) => {
       console.log("config created and read")
     }
     if(config!.most) {
-      piMost = new PiMost()
+      //piMost = new PiMost()
     }
 })
 
@@ -63,9 +53,9 @@ console.log(app.commandLine.hasSwitch('disable-webusb-security'))
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: config.width,
-    height: config.height,
-    kiosk: config.kiosk,
+    width: config!.width,
+    height: config!.height,
+    kiosk: config!.kiosk,
     show: false,
     frame: false,
     autoHideMenuBar: true,
@@ -90,9 +80,7 @@ function createWindow(): void {
   //   return false
   // })
 
-  mainWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
-
-      // Add logic here to determine if permission should be given to allow HID selection
+  mainWindow.webContents.session.setPermissionCheckHandler(() => {
       return true
   })
 
@@ -137,8 +125,8 @@ function createWindow(): void {
   app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
   systemPreferences.askForMediaAccess("microphone")
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    details.responseHeaders['Cross-Origin-Opener-Policy'] = ['same-origin'];
-    details.responseHeaders['Cross-Origin-Embedder-Policy'] = ['require-corp'];
+    details.responseHeaders!['Cross-Origin-Opener-Policy'] = ['same-origin'];
+    details.responseHeaders!['Cross-Origin-Embedder-Policy'] = ['require-corp'];
     callback({ responseHeaders: details.responseHeaders });
   });
 }
@@ -177,6 +165,8 @@ app.whenReady().then(() => {
 
   ipcMain.on('startStream', startMostStream)
 
+  ipcMain.on('quit', quit)
+
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -201,6 +191,10 @@ const startMostStream = (_: IpcMainEvent, most: Stream) => {
   if(piMost) {
     piMost.stream(most)
   }
+}
+
+const quit = (_: IpcMainEvent) => {
+  app.quit()
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

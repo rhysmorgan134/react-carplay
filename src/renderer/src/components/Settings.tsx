@@ -1,4 +1,4 @@
-import { ExtraConfig } from "../../../main";
+import { ExtraConfig } from "../../../main/Globals";
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -228,7 +228,7 @@ function Settings({ settings }: SettingsProps) {
         </Grid>
         <Grid xs={12} >
           <Box>
-            <Button onClick={() => window.electronAPI.saveSettings(activeSettings)}>SAVE</Button>
+            <Button onClick={() => window.api.saveSettings(activeSettings)}>SAVE</Button>
           </Box>
         </Grid>
         <Dialog

@@ -7,7 +7,7 @@
     "src/preload/*.d.ts"
   ],
   "compilerOptions": {
-    "composite": true,
+    "composite": false,
     "jsx": "react-jsx",
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext", "WebWorker"],

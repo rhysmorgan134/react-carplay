@@ -11,7 +11,7 @@ import { CarPlayWorker } from './worker/types'
 import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
-import { ExtraConfig } from "../../../main";
+import { ExtraConfig} from "../../../main/Globals";
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -58,8 +58,8 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
       switch (type) {
         case 'plugged':
           setPlugged(true)
-          if(settings.piMost) {
-            window.electronAPI.stream(settings.most)
+          if(settings.piMost && settings?.most?.stream) {
+            window.api.stream(settings.most.stream)
           }
           break
         case 'unplugged':
@@ -70,9 +70,6 @@ function Carplay({ receivingVideo, setReceivingVideo, settings }: CarplayProps) 
           if (!jmuxer || document.hidden) return
           if (!receivingVideo) {
             setReceivingVideo(true)
-            if(settings.piMost) {
-              window.electronAPI.stream(settings.most)
-            }
           }
           const { message: video } = ev.data
           jmuxer.feed({

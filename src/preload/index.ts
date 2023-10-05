@@ -1,67 +1,40 @@
-// import {
-//   contextBridge,
-//   createIpcRenderer,
-//   GetApiType,
-// } from 'electron-typescript-ipc';
-// import type {CarplayMessage} from 'node-carplay/node'
-//
-// const ipcRenderer = createIpcRenderer<Api>()
-//
-// export type Api = GetApiType<
-//   {
-//     getFrame: () => void
-//   },
-//   {
-//     message: (message :CarplayMessage) => void
-//   }
-// >
-//
-// const api:Api = {
-//   invoke: {
-//     getFrame: () => {
-//       console.log("frameRequest")
-//     }
-//   },
-//   on: {
-//     message: (listener) => {
-//       ipcRenderer.on('message', listener)
-//     }
-//   }
-// }
-//
-// contextBridge.exposeInMainWorld('myAPI', api)
-//
-// declare global {
-//   interface Window {
-//     myAPI: Api;
-//   }
-// }
-//
-import { contextBridge, ipcRenderer } from "electron";
+import { IpcRendererEvent, contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { ExtraConfig } from "../main";
+import { ExtraConfig} from "../main/Globals";
 import { Stream } from "socketmost/dist/modules/Messages";
 
-// Custom APIs for renderer
-const api = {}
+type ApiCallback = (event: IpcRendererEvent, ...args: any[]) => void
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-    contextBridge.exposeInMainWorld('electronAPI', {
-      settings: (callback: Function) => ipcRenderer.on('settings', callback),
-      getSettings: () => ipcRenderer.send('getSettings'),
-      saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings),
-      stream: (stream: Stream) => ipcRenderer.send('startStream', stream)
-    })
-  } catch (error) {
-    console.error(error)
-  }
-} else {
-  window.electron = electronAPI
-  window.api = api
+export interface Api {
+  settings: (callback: ApiCallback) => void
+  getSettings: () => void
+  saveSettings: (settings: ExtraConfig) => void
+  stream: (stream: Stream) =>  void
+  quit: () =>  void
 }
+
+
+
+// Custom APIs for renderer
+const api: Api = {
+  settings: (callback: ApiCallback) => ipcRenderer.on('settings', callback),
+  getSettings: () => ipcRenderer.send('getSettings'),
+  saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings),
+  stream: (stream: Stream) => ipcRenderer.send('startStream', stream),
+  quit: () => ipcRenderer.send('quit')
+}
+
+try {
+  contextBridge.exposeInMainWorld('electron', electronAPI)
+  contextBridge.exposeInMainWorld('api', api)
+  contextBridge.exposeInMainWorld('electronAPI', {
+    settings: (callback: ApiCallback) => ipcRenderer.on('settings', callback),
+    getSettings: () => ipcRenderer.send('getSettings'),
+    saveSettings: (settings: ExtraConfig) => ipcRenderer.send('saveSettings', settings),
+    stream: (stream: Stream) => ipcRenderer.send('startStream', stream),
+    quit: () => ipcRenderer.send('quit')
+  })
+} catch (error) {
+  console.error(error)
+}
+
