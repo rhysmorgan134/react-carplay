@@ -5,6 +5,7 @@ export type CarplayWorkerMessage = { data: CarplayMessage }
 export type KeyCommand = 'left' |
   'right' |
   'selectDown' |
+  'selectUp' |
   'back' |
   'down' |
   'home' |

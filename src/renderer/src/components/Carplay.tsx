@@ -16,7 +16,9 @@ import { ExtraConfig} from "../../../main/Globals";
 const width = window.innerWidth
 const height = window.innerHeight
 
-const RETRY_DELAY_MS = 5000
+const RETRY_DELAY_MS = 15000
+
+
 
 interface CarplayProps {
   receivingVideo: boolean
@@ -34,6 +36,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const mainElem = useRef<HTMLDivElement>(null)
+  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const config = {
     fps: settings.fps,
     width: width,
@@ -52,6 +55,13 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   )
 
   const { processAudio, startRecording, stopRecording } = useCarplayAudio(carplayWorker, settings.microphone)
+
+  const clearRetryTimeout = useCallback(() => {
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current)
+      retryTimeoutRef.current = null
+    }
+  }, [])
 
   // subscribe to worker messages
   useEffect(() => {
@@ -73,6 +83,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           if (!receivingVideo) {
             setReceivingVideo(true)
           }
+          clearRetryTimeout()
           const { message: video } = ev.data
           jmuxer.feed({
             video: video.data,
@@ -80,6 +91,8 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           })
           break
         case 'audio':
+          clearRetryTimeout()
+
           const { message: audio } = ev.data
           processAudio(audio)
           break
@@ -102,14 +115,18 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           }
           break
         case 'failure':
-          console.error(`Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`)
-          setTimeout(() => {
-            window.location.reload()
-          }, RETRY_DELAY_MS)
+          if (retryTimeoutRef.current == null) {
+            console.error(
+              `Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`,
+            )
+            retryTimeoutRef.current = setTimeout(() => {
+              window.location.reload()
+            }, RETRY_DELAY_MS)
+          }
           break
       }
     }
-  }, [carplayWorker, jmuxer, processAudio, receivingVideo, startRecording, stopRecording])
+  }, [carplayWorker, jmuxer, processAudio, clearRetryTimeout, receivingVideo, startRecording, stopRecording])
 
   // video init
   useEffect(() => {
