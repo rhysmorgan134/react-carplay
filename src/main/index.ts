@@ -6,6 +6,7 @@ import { DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
 import {Stream} from 'socketmost/dist/modules/Messages'
 import { PiMost } from './PiMost'
+import {Canbus} from "./Canbus";
 import { ExtraConfig, KeyBindings } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
@@ -34,15 +35,26 @@ const EXTRA_CONFIG: ExtraConfig = {
   camera: '',
   microphone: '',
   piMost: false,
+  canbus: false,
   bindings: DEFAULT_BINDINGS,
-  most: {}
+  most: {},
+  canConfig: {}
 }
 
 let piMost: PiMost | null
+let canbus: Canbus | null
 
 fs.exists(configPath, (exists) => {
     if(exists) {
       config = JSON.parse(fs.readFileSync(configPath).toString())
+      let configKeys = JSON.stringify(Object.keys({...config}).sort())
+      let defaultKeys =  JSON.stringify(Object.keys({...EXTRA_CONFIG}).sort())
+      if(configKeys !== defaultKeys) {
+        console.log("config updating")
+        config = {...EXTRA_CONFIG, ...config}
+        console.log("new config", config)
+        fs.writeFileSync(configPath, JSON.stringify(config))
+      }
       console.log("config read")
     } else {
       fs.writeFileSync(configPath, JSON.stringify(EXTRA_CONFIG))
@@ -51,6 +63,16 @@ fs.exists(configPath, (exists) => {
     }
     if(config!.most) {
       //piMost = new PiMost()
+    }
+
+    if(config!.canbus) {
+      canbus = new Canbus('can0', config!.canConfig)
+      canbus.on('lights', (data) => {
+        console.log('lights', data)
+      })
+      canbus.on('reverse', (data) => {
+        console.log('reverse', data)
+      })
     }
 })
 

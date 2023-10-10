@@ -24,6 +24,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MostStream from './MostStream'
 import { TransitionProps } from '@mui/material/transitions/transition'
 import { KeyBindings } from "./KeyBindings";
+import { Canbus } from "./Canbus";
 
 interface SettingsProps {
   settings: ExtraConfig
@@ -44,6 +45,7 @@ function Settings({ settings }: SettingsProps) {
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([])
   const [openStream, setOpenStream] = useState<boolean>(false)
   const [openBindings, setOpenBindings] = useState<boolean>(false)
+  const [openCan, setOpenCan] = useState<boolean>(false)
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -232,6 +234,7 @@ function Settings({ settings }: SettingsProps) {
           <Box>
             <Button onClick={() => window.api.saveSettings(activeSettings)}>SAVE</Button>
             <Button onClick={() => setOpenBindings(true)}>BINDINGS</Button>
+            <Button onClick={() => setOpenCan(true)}>CANBUS</Button>
           </Box>
         </Grid>
         <Dialog
@@ -244,6 +247,18 @@ function Settings({ settings }: SettingsProps) {
           <DialogTitle>{'PiMost Stream Settings'}</DialogTitle>
           <DialogContent >
             <MostStream setSettings={settingsChange} setOpenStream={setOpenStream}/>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={openCan}
+          TransitionComponent={Transition}
+          keepMounted
+          PaperProps={{style: {minHeight: '80%'}}}
+          onClose={() => setOpenCan(false)}
+        >
+          <DialogTitle>{'Canbus Settings'}</DialogTitle>
+          <DialogContent >
+            <Canbus settings={activeSettings} setSettings={settingsChange} setOpenCan={setOpenCan}/>
           </DialogContent>
         </Dialog>
         <Dialog

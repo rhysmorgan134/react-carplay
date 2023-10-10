@@ -10,8 +10,10 @@ export type ExtraConfig = DongleConfig & {
   camera: string,
   microphone: string,
   piMost: boolean,
+  canbus: boolean,
   bindings: KeyBindings,
-  most?: Most
+  most?: Most,
+  canConfig?: CanConfig
 }
 
 export interface KeyBindings {
@@ -25,4 +27,15 @@ export interface KeyBindings {
   'pause': string,
   'next': string,
   'prev': string
+}
+
+export interface CanMessage {
+  canId: number,
+  byte: number,
+  mask: number
+}
+
+export interface CanConfig {
+  reverse?: CanMessage,
+  lights?: CanMessage
 }
