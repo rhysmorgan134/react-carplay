@@ -71,6 +71,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
         case 'plugged':
           setPlugged(true)
           if(settings.piMost && settings?.most?.stream) {
+            console.log("setting most stream")
             window.api.stream(settings.most.stream)
           }
           break

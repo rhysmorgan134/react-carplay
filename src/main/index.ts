@@ -62,7 +62,7 @@ fs.exists(configPath, (exists) => {
       console.log("config created and read")
     }
     if(config!.most) {
-      //piMost = new PiMost()
+      piMost = new PiMost()
     }
 
     if(config!.canbus) {
@@ -71,7 +71,7 @@ fs.exists(configPath, (exists) => {
         console.log('lights', data)
       })
       canbus.on('reverse', (data) => {
-        console.log('reverse', data)
+        mainWindow?.webContents?.send('reverse', data)
       })
     }
 })
@@ -223,6 +223,7 @@ const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
 }
 
 const startMostStream = (_: IpcMainEvent, most: Stream) => {
+  console.log("stream request")
   if(piMost) {
     piMost.stream(most)
   }

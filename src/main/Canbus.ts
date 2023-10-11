@@ -1,7 +1,7 @@
-import {Message} from "*can.node";
+// import {Message} from "*can.node";
 import * as can from "socketcan";
 import EventEmitter from 'events'
-import { CanConfig, CanMessage } from "./Globals";
+import { CanConfig } from "./Globals";
 
 type CanMask = {
   id: number,
@@ -22,11 +22,11 @@ export class Canbus extends EventEmitter {
     this.channel = can.createRawChannel(this.canChannel)
     this.masks = []
     Object.keys(this.subscriptions).forEach((sub) => {
-      this.masks.push({id: this.subscriptions[sub].canId, mask: this.subscriptions[sub].mask, invert: false})
+      this.masks.push({id: this.subscriptions[sub].canId, mask: this.subscriptions[sub].canId, invert: false})
     })
-    this.channel.setRxFilter(this.masks)
+    this.channel.setRxFilters(this.masks)
 
-    this.channel.addListener("onMessage", (msg: Message) => {
+    this.channel.addListener("onMessage", (msg) => {
       switch (msg.id) {
         case this.subscriptions?.reverse?.canId:
           this.emit('reverse', msg.data[this.subscriptions!.reverse!.byte] & this.subscriptions!.reverse!.mask)

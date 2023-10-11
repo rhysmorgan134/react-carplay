@@ -26,7 +26,7 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
     for(const [k, v] of Object.entries(stream)) {
       parsedNumeric[k] = parseInt(v)
     }
-    setSettings('most', parsedNumeric)
+    setSettings('most', {stream: {...parsedNumeric}})
     setSettings('piMost', true)
     setOpenStream(false)
   }

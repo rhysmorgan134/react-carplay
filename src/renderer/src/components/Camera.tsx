@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {Typography} from "@mui/material";
 
-const Webcam = ({settings}) => {
+const Camera = ({settings}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [cameraFound, setCameraFound] = useState(false)
   console.log(settings)
@@ -35,4 +35,4 @@ const Webcam = ({settings}) => {
   );
 };
 
-export default Webcam;
+export default Camera;

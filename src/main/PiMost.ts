@@ -5,7 +5,6 @@ export class PiMost {
   socketMost: SocketMost
   socketMostClient: SocketMostClient
   constructor() {
-    console.log("creating PiMost")
     this.socketMost = new SocketMost()
     this.socketMostClient = new SocketMostClient()
 

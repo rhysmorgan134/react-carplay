@@ -7,8 +7,22 @@ import Home from "./components/Home";
 import Nav from "./components/Nav";
 import Carplay from './components/Carplay'
 import Camera from './components/Camera'
+import { IpcRendererEvent } from "electron";
+import { Box, Dialog, Modal } from '@mui/material'
 
 // rm -rf node_modules/.vite; npm run dev
+
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  height: '95%',
+  width: '95%',
+  boxShadow: 24,
+  display: "flex"
+};
 
 function App() {
   const [settings, setSettings] = useState<ExtraConfig | null>(null)
@@ -17,6 +31,7 @@ function App() {
   const [receivingVideo, setReceivingVideo] = useState(false)
   const [commandCounter, setCommandCounter] = useState(0)
   const [keyCommand, setKeyCommand] = useState('')
+  const [reverse, setReverse] = useState(false)
   const [key, setKey] = useState('')
 
 
@@ -32,6 +47,13 @@ function App() {
       })
     }
 
+  }, [window.api]);
+
+  useEffect(() => {
+    window.api.reverse((_: IpcRendererEvent, value: boolean) => {
+      console.log("reverse", value)
+      value ? setReverse(true) : setReverse(false)
+    })
   }, [window.api]);
 
 
@@ -84,6 +106,14 @@ function App() {
           <Route path={"/info"} element={<Info />} />
           <Route path={"/camera"} element={<Camera settings={settings!}/>} />
         </Routes>
+        <Modal
+          open={reverse}
+          onClick={()=> setReverse(false)}
+        >
+          <Box sx={style}>
+            <Camera settings={settings}/>
+          </Box>
+        </Modal>
       </div>
     </Router>
 
