@@ -38,7 +38,7 @@
     "pcm-ringbuf-player": "^0.0.3",
     "react-loader-spinner": "^5.4.5",
     "react-router-dom": "^6.16.0",
-    "socketmost": "^2.0.2",
+    "socketmost": "^2.0.5",
     "stream-browserify": "^3.0.0",
     "usb": "^2.10.0",
     "vite-plugin-esmodule": "^1.5.0",
