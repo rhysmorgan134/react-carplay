@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #directories
 bower_components
 node_modules
@@ -13,3 +14,9 @@ assets
 .idea/workspace.xml
 *.xml
 
+=======
+node_modules
+dist
+out
+*.log*
+>>>>>>> origin/v4

@@ -1,89 +1,71 @@
 {
-  "name": "carplay",
-  "version": "3.0.2",
-  "private": true,
-  "author": {
-    "name": "Rhys Morgan",
-    "email": "rhys1802@hotmail.co.uk"
-  },
-  "homepage": "./",
-  "productName": "ReactCarplay",
-  "main": "electron/main.js",
-  "dependencies": {
-    "@electron/rebuild": "^3.2.10",
-    "@fontsource/montserrat": "^4.5.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "electron-is-dev": "^2.0.0",
-    "electron-store": "^8.0.1",
-    "jmuxer": "^2.0.4",
-    "node-carplay": "^3.0.6",
-    "react": "^18.2.0",
-    "react-app-rewired": "^2.2.1",
-    "react-dom": "^18.2.0",
-    "react-js-carplay": "^3.0.7",
-    "react-modal": "^3.14.4",
-    "react-scripts": "^5.0.1",
-    "react-switch": "^7.0.0",
-    "socket.io": "^4.5.4",
-    "socket.io-client": "^4.5.4",
-    "usb": "^1.7.1",
-    "versiony": "^2.0.1",
-    "web-vitals": "^1.1.2"
-  },
+  "name": "react-carplay",
+  "version": "4.0.0-beta.5",
+  "description": "An Electron application with React and TypeScript",
+  "main": "./out/main/index.js",
+  "author": "Rhys Morgan",
+  "homepage": "https://www.electronjs.org",
   "scripts": {
-    "start": "export BROWSER=none && react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-app-rewired eject",
-    "electron-rebuild": "electron-rebuild",
-    "start-electron": "export ELECTRON_START_URL=http://localhost:3000 && electron . --no-sandbox",
-    "build-electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
-    "package-deb": "USE_SYSTEM_FPM=true electron-builder build --linux deb --armv7l -c.extraMetadata.main=build/electron/main.js --publish never",
-    "package": "electron-builder build --linux AppImage --armv7l --arm64 -c.extraMetadata.main=build/electron/main.js --publish never",
-    "package-x64": "electron-builder build --linux AppImage --x64 -c.extraMetadata.main=build/electron/main.js --publish never",
-    "increment-version": "versiony package.json --patch && git add . && git commit -m 'new version' && git push",
-    "build-package": "npm run electron-rebuild && npm run build && npm run build-electron && npm run package",
-    "build-packagex64": "npm run build && npm run build-electron && npm run package-x64",
-    "build-packageMac": "npm run build && npm run build-electron && npm run package-Mac",
-    "package-Mac": "electron-builder --mac -c.extraMetadata.main=build/electron/main.js --publish never"
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "npm run build && electron-builder --win --config",
+    "build:mac": "electron-vite build && electron-builder --mac --config",
+    "build:linux": "electron-vite build && electron-builder --linux --config",
+    "build:armLinux": "electron-vite build && electron-builder --linux AppImage --arm64 --armv7l --config"
   },
-  "build": {
-    "npmRebuild": false,
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "publish": {
-      "provider": "github",
-      "repo": "electron-cra-example",
-      "owner": "Rhys_M"
-    }
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@electron-toolkit/preload": "^2.0.0",
+    "@electron-toolkit/utils": "^2.0.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.11",
+    "@mui/material": "^5.14.11",
+    "buffer": "^6.0.3",
+    "electron-is-dev": "^2.0.0",
+    "electron-typescript-ipc": "^3.0.0",
+    "events": "^3.3.0",
+    "jmuxer": "^2.0.5",
+    "node-carplay": "github:rhysmorgan134/node-CarPlay",
+    "pcm-player": "^0.0.16",
+    "pcm-ringbuf-player": "^0.0.3",
+    "react-loader-spinner": "^5.4.5",
+    "react-router-dom": "^6.16.0",
+    "socketmost": "^2.0.5",
+    "stream-browserify": "^3.0.0",
+    "usb": "^2.10.0",
+    "vite-plugin-esmodule": "^1.5.0",
+    "socketcan": "^4.0.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.6",
-    "@babel/preset-react": "^7.16.7",
-    "electron": "^22.0.0",
-    "electron-builder": "^23.6.0",
-    "process": "^0.11.10"
+    "@electron-toolkit/eslint-config-prettier": "^1.0.1",
+    "@electron-toolkit/eslint-config-ts": "^1.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@types/events": "^3.0.1",
+    "@types/node": "^18.18.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.4",
+    "electron": "^25.6.0",
+    "electron-builder": "^24.6.3",
+    "electron-vite": "^1.0.27",
+    "eslint": "^8.47.0",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "^3.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9"
+  },
+  "optionalDependencies": {
   }
 }

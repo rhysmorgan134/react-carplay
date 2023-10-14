@@ -1,0 +1,33 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": [
+    "src/renderer/src/env.d.ts",
+    "src/renderer/src/**/*",
+    "src/renderer/src/**/*.tsx",
+    "src/preload/*.d.ts"
+  ],
+  "compilerOptions": {
+    "composite": false,
+    "jsx": "react-jsx",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext", "WebWorker"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@renderer/*": [
+        "src/renderer/src/*"
+      ]
+    }
+  }
+}
