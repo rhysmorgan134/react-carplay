@@ -19,10 +19,10 @@ echo "Downloading AppImage"
 
 if getconf LONG_BIT | grep -q '64'; then
 	echo "64 Bit Detected"
- 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.0/ReactCarplay-4.0.0-arm64.AppImage --output /home/$USER/Desktop/Carplay.AppImage
+ 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.0.0/react-carplay-4.0.0-arm64.AppImage --output /home/$USER/Desktop/Carplay.AppImage
 else
 	echo "32 Bit Detected"
- 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.0/ReactCarplay-4.0.0-armv7l.AppImage --output /home/$USER/Desktop/Carplay.AppImage
+ 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.0/react-carplay-4.0.0-armv7l.AppImage --output /home/$USER/Desktop/Carplay.AppImage
 fi
 
 echo "Download Done"
