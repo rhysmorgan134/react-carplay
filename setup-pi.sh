@@ -38,7 +38,3 @@ Exec=/home/$USER/Desktop/Carplay.AppImage
 Type=Application' > /etc/xdg/autostart/carplay.desktop"
 
 echo "All Done"
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/v4
