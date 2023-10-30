@@ -4,6 +4,8 @@
 const RENDER_QUANTUM_FRAMES = 128;
 const RING_POINTERS_SIZE = 8;
 /**
+ * Taken from https://github.com/gozmanyoni/pcm-ringbuf-player - needs to be seperated here and hosted as a public resource otherwise electron is not happy
+ *
  * A Reader class used by this worklet to read from a Adapted from a SharedArrayBuffer written to by ringbuf.js on the main thread, Adapted from https://github.com/padenot/ringbuf.js
  * MPL-2.0 License (see RingBuffer_LICENSE.txt)
  *
