@@ -7,7 +7,7 @@ import {
   AudioFormat,
   decodeTypeMap,
 } from 'node-carplay/web'
-import { PcmPlayer } from '../pcm-ringbuf-player/src/PcmPlayer'
+import { PcmPlayer } from 'pcm-ringbuf-player'
 import { CarPlayWorker } from './worker/types'
 
 //TODO: allow to configure
@@ -16,14 +16,17 @@ const defaultNavVolume = 0.5
 
 const useCarplayAudio = (worker: CarPlayWorker, microphone: string | null = null) => {
   const [mic, setMic] = useState<WebMicrophone | null>(null)
-  const [audioPlayers] = useState(new Map<AudioFormat, PcmPlayer>())
+  const [audioPlayers] = useState(new Map<string, PcmPlayer>())
 
   const getAudioPlayer = useCallback(
-    (format: AudioFormat): PcmPlayer => {
-      let player = audioPlayers.get(format)
+    (audio: AudioData): PcmPlayer => {
+      const { decodeType, audioType } = audio
+      const format = decodeTypeMap[decodeType]
+      const audioKey = [format.frequency, format.channel, audioType].join('_')
+      let player = audioPlayers.get(audioKey)
       if (player) return player
       player = new PcmPlayer(format.frequency, format.channel)
-      audioPlayers.set(format, player)
+      audioPlayers.set(audioKey, player)
       player.volume(defaultAudioVolume)
       player.start()
       return player
@@ -34,22 +37,32 @@ const useCarplayAudio = (worker: CarPlayWorker, microphone: string | null = null
   const processAudio = useCallback(
     (audio: AudioData) => {
       if (audio.data) {
-        const { decodeType, data } = audio
-        const format = decodeTypeMap[decodeType]
-        const player = getAudioPlayer(format)
+        const { data } = audio
+        const player = getAudioPlayer(audio)
+        if(audio.volumeDuration) {
+          console.log("duration in different place", audio)
+        }
         player.feed(data)
+      } else if (audio.volumeDuration) {
+        const { volume, volumeDuration } = audio
+        const player = getAudioPlayer(audio)
+        console.log("changing audio volume", audio)
+        console.log(parseFloat(audio.volumeDuration))
+        player.volume(volume, volumeDuration)
       } else if (audio.command) {
         switch (audio.command) {
           case AudioCommand.AudioNaviStart:
-            const navPlayer = getAudioPlayer(decodeTypeMap[audio.decodeType])
+            const navPlayer = getAudioPlayer(audio)
             navPlayer.volume(defaultNavVolume)
             break
           case AudioCommand.AudioMediaStart:
           case AudioCommand.AudioOutputStart:
-            const mediaPlayer = getAudioPlayer(decodeTypeMap[audio.decodeType])
+            const mediaPlayer = getAudioPlayer(audio)
             mediaPlayer.volume(defaultAudioVolume)
             break
         }
+      } else {
+        console.log(audio)
       }
     },
     [getAudioPlayer],

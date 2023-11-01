@@ -1,7 +1,6 @@
 import { app, shell, BrowserWindow, session, systemPreferences, IpcMainEvent, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
 import { DEFAULT_CONFIG } from 'node-carplay/node'
 import * as fs from 'fs';
 import {Stream} from 'socketmost/dist/modules/Messages'
@@ -95,7 +94,6 @@ function createWindow(): void {
     show: false,
     frame: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
