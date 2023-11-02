@@ -1,14 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
-import { ExtraConfig } from "../../main/Globals";
 import Settings from "./components/Settings";
 import Info from "./components/Info";
 import Home from "./components/Home";
 import Nav from "./components/Nav";
 import Carplay from './components/Carplay'
 import Camera from './components/Camera'
-import { IpcRendererEvent } from "electron";
-import { Box, Dialog, Modal } from '@mui/material'
+import { Box, Modal } from '@mui/material'
+import { useCarplayStore } from "./store/store";
 
 // rm -rf node_modules/.vite; npm run dev
 
@@ -25,36 +24,12 @@ const style = {
 };
 
 function App() {
-  const [settings, setSettings] = useState<ExtraConfig | null>(null)
-  const intialized = useRef(false)
-  const intialized2 = useRef(false)
   const [receivingVideo, setReceivingVideo] = useState(false)
   const [commandCounter, setCommandCounter] = useState(0)
   const [keyCommand, setKeyCommand] = useState('')
   const [reverse, setReverse] = useState(false)
-  const [key, setKey] = useState('')
+  const settings = useCarplayStore((state) => state.settings)
 
-
-
-  console.log("rendering")
-
-  useEffect(() => {
-    if(!intialized.current) {
-      intialized.current = true
-      window.api.settings((_, value: ExtraConfig) => {
-        console.log("setting settings")
-        setSettings(value)
-      })
-    }
-
-  }, [window.api]);
-
-  useEffect(() => {
-    window.api.reverse((_: IpcRendererEvent, value: boolean) => {
-      console.log("reverse", value)
-      value ? setReverse(true) : setReverse(false)
-    })
-  }, [window.api]);
 
 
   useEffect(() => {
@@ -66,9 +41,9 @@ function App() {
 
   const onKeyDown = (event: KeyboardEvent) => {
     console.log(event.code)
-    if(Object.values(settings.bindings).includes(event.code)) {
-      let action = Object.keys(settings.bindings).find(key =>
-        settings.bindings[key] === event.code
+    if(Object.values(settings!.bindings).includes(event.code)) {
+      let action = Object.keys(settings!.bindings).find(key =>
+        settings!.bindings[key] === event.code
       )
       if(action !== undefined) {
         setKeyCommand(action)
@@ -83,12 +58,6 @@ function App() {
       }
     }
   }
-
-  useEffect(() => {
-    if(!intialized2.current) {
-      window.api.getSettings()
-    }
-  }, [window.api]);
 
   return (
     <Router>

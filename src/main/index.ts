@@ -2,10 +2,11 @@ import { app, shell, BrowserWindow, session, systemPreferences, IpcMainEvent, ip
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { DEFAULT_CONFIG } from 'node-carplay/node'
+import { Socket } from './Socket'
 import * as fs from 'fs';
-import {Stream} from 'socketmost/dist/modules/Messages'
-import { PiMost } from './PiMost'
-import {Canbus} from "./Canbus";
+// import {Stream} from 'socketmost/dist/modules/Messages'
+// import { PiMost } from './PiMost'
+// import {Canbus} from "./Canbus";
 import { ExtraConfig, KeyBindings } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
 
@@ -40,8 +41,10 @@ const EXTRA_CONFIG: ExtraConfig = {
   canConfig: {}
 }
 
-let piMost: PiMost | null
-let canbus: Canbus | null
+let piMost: null
+let canbus: null
+
+let socket: null | Socket
 
 fs.exists(configPath, (exists) => {
     if(exists) {
@@ -60,20 +63,22 @@ fs.exists(configPath, (exists) => {
       config = JSON.parse(fs.readFileSync(configPath).toString())
       console.log("config created and read")
     }
-    if(config!.most) {
-      console.log('creating pi most in main')
-      piMost = new PiMost()
-    }
+    socket = new Socket(config!, saveSettings)
+    // if(config!.most) {
+    //   console.log('creating pi most in main')
+    //   piMost = new PiMost()
+    // }
+    //
+    // if(config!.canbus) {
+    //   canbus = new Canbus('can0', config!.canConfig)
+    //   canbus.on('lights', (data) => {
+    //     console.log('lights', data)
+    //   })
+    //   canbus.on('reverse', (data) => {
+    //     mainWindow?.webContents?.send('reverse', data)
+    //   })
+    // }
 
-    if(config!.canbus) {
-      canbus = new Canbus('can0', config!.canConfig)
-      canbus.on('lights', (data) => {
-        console.log('lights', data)
-      })
-      canbus.on('reverse', (data) => {
-        mainWindow?.webContents?.send('reverse', data)
-      })
-    }
 })
 
 const handleSettingsReq = (_: IpcMainEvent ) => {
@@ -197,7 +202,7 @@ app.whenReady().then(() => {
 
   ipcMain.on('saveSettings', saveSettings)
 
-  ipcMain.on('startStream', startMostStream)
+  // ipcMain.on('startStream', startMostStream)
 
   ipcMain.on('quit', quit)
 
@@ -217,16 +222,17 @@ app.whenReady().then(() => {
   })
 })
 
-const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
+const saveSettings = (settings: ExtraConfig) => {
+  console.log("saving settings", settings)
   fs.writeFileSync(configPath, JSON.stringify(settings))
 }
 
-const startMostStream = (_: IpcMainEvent, most: Stream) => {
-  console.log("stream request")
-  if(piMost) {
-    piMost.stream(most)
-  }
-}
+// const startMostStream = (_: IpcMainEvent, most: Stream) => {
+//   console.log("stream request")
+//   if(piMost) {
+//     piMost.stream(most)
+//   }
+// }
 
 const quit = (_: IpcMainEvent) => {
   app.quit()

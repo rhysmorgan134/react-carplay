@@ -12,6 +12,7 @@ import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig} from "../../../main/Globals";
+import { useCarplayStore } from "../store/store";
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -37,6 +38,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   const { pathname } = useLocation()
   const mainElem = useRef<HTMLDivElement>(null)
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const stream = useCarplayStore(state => state.stream)
   const config = {
     fps: settings.fps,
     width: width,
@@ -72,7 +74,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           setPlugged(true)
           if(settings.piMost && settings?.most?.stream) {
             console.log("setting most stream")
-            window.api.stream(settings.most.stream)
+            stream(settings.most.stream)
           }
           break
         case 'unplugged':
@@ -80,7 +82,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           break
         case 'video':
           // if document is hidden we dont need to feed frames
-          if (!jmuxer || document.hidden) return
+          if (!jmuxer) return
           if (!receivingVideo) {
             setReceivingVideo(true)
           }

@@ -38,11 +38,12 @@
     "pcm-ringbuf-player": "github:rhysmorgan134/pcm-ringbuf-player",
     "react-loader-spinner": "^5.4.5",
     "react-router-dom": "^6.16.0",
-    "socketmost": "^2.0.5",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "stream-browserify": "^3.0.0",
     "usb": "^2.10.0",
     "vite-plugin-esmodule": "^1.5.0",
-    "socketcan": "^4.0.4"
+    "zustand": "^4.4.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",
@@ -65,7 +66,5 @@
     "rollup-plugin-polyfill-node": "^0.12.0",
     "typescript": "^5.1.6",
     "vite": "^4.4.9"
-  },
-  "optionalDependencies": {
   }
 }

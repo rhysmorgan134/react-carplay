@@ -25,6 +25,7 @@ import MostStream from './MostStream'
 import { TransitionProps } from '@mui/material/transitions/transition'
 import { KeyBindings } from "./KeyBindings";
 import { Canbus } from "./Canbus";
+import { useCarplayStore } from "../store/store";
 
 interface SettingsProps {
   settings: ExtraConfig
@@ -46,6 +47,7 @@ function Settings({ settings }: SettingsProps) {
   const [openStream, setOpenStream] = useState<boolean>(false)
   const [openBindings, setOpenBindings] = useState<boolean>(false)
   const [openCan, setOpenCan] = useState<boolean>(false)
+  const saveSettings = useCarplayStore(state => state.saveSettings)
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -232,7 +234,7 @@ function Settings({ settings }: SettingsProps) {
         </Grid>
         <Grid xs={12} >
           <Box>
-            <Button onClick={() => window.api.saveSettings(activeSettings)}>SAVE</Button>
+            <Button onClick={() => saveSettings(activeSettings)}>SAVE</Button>
             <Button onClick={() => setOpenBindings(true)}>BINDINGS</Button>
             <Button onClick={() => setOpenCan(true)}>CANBUS</Button>
           </Box>

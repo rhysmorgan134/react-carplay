@@ -4,7 +4,6 @@ import {
   AudioCommand,
   AudioData,
   WebMicrophone,
-  AudioFormat,
   decodeTypeMap,
 } from 'node-carplay/web'
 import { PcmPlayer } from 'pcm-ringbuf-player'
@@ -47,7 +46,7 @@ const useCarplayAudio = (worker: CarPlayWorker, microphone: string | null = null
         const { volume, volumeDuration } = audio
         const player = getAudioPlayer(audio)
         console.log("changing audio volume", audio)
-        console.log(parseFloat(audio.volumeDuration))
+        console.log(audio.volumeDuration)
         player.volume(volume, volumeDuration)
       } else if (audio.command) {
         switch (audio.command) {
