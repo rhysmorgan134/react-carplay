@@ -38,4 +38,12 @@ export class Socket {
   sendSettings() {
     this.io.emit('settings', this.config)
   }
+
+  sendReverse(reverse: boolean) {
+    this.io.emit('reverse', reverse)
+  }
+
+  sendLights(lights: boolean) {
+    this.io.emit('lights', lights)
+  }
 }
