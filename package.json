@@ -43,7 +43,9 @@
     "stream-browserify": "^3.0.0",
     "usb": "^2.10.0",
     "vite-plugin-esmodule": "^1.5.0",
-    "zustand": "^4.4.5"
+    "zustand": "^4.4.5",
+    "socketcan": "^4.0.4",
+    "socketmost": "^2.0.6"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",
@@ -65,8 +67,6 @@
     "react-dom": "^18.2.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "typescript": "^5.1.6",
-    "vite": "^4.4.9",
-    "socketcan": "^4.0.4",
-    "socketmost": "^2.0.6"
+    "vite": "^4.4.9"
   }
 }
