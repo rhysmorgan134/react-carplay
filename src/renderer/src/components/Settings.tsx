@@ -198,29 +198,29 @@ function Settings({ settings }: SettingsProps) {
     )
   }
 
-  // useEffect(() => {
-  //   if(!navigator.mediaDevices?.enumerateDevices) {
-  //     setMicrophones([])
-  //     setCameras([])
-  //   } else {
-  //     navigator.mediaDevices
-  //       .enumerateDevices()
-  //       .then((devices) => {
-  //         const microphones: MediaDeviceInfo[] = []
-  //         const webcams: MediaDeviceInfo[] = []
-  //         devices.forEach((device) => {
-  //           if(device.kind === "audioinput") {
-  //             microphones.push(device)
-  //           } else if (device.kind === "videoinput") {
-  //             webcams.push(device)
-  //           }
-  //         })
-  //         console.log(webcams, microphones)
-  //         setCameras(webcams)
-  //         setMicrophones(microphones)
-  //       })
-  //   }
-  // }, []);
+  useEffect(() => {
+    if(!navigator.mediaDevices?.enumerateDevices) {
+      setMicrophones([])
+      setCameras([])
+    } else {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const microphones: MediaDeviceInfo[] = []
+          const webcams: MediaDeviceInfo[] = []
+          devices.forEach((device) => {
+            if(device.kind === "audioinput") {
+              microphones.push(device)
+            } else if (device.kind === "videoinput") {
+              webcams.push(device)
+            }
+          })
+          console.log(webcams, microphones)
+          setCameras(webcams)
+          setMicrophones(microphones)
+        })
+    }
+  }, []);
   const renderSettings = () => {
     return (
       <Grid container spacing={2}>
