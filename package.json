@@ -1,6 +1,6 @@
 {
   "name": "react-carplay",
-  "version": "4.0.0-beta.5",
+  "version": "4.0.1",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "Rhys Morgan",

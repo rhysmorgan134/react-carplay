@@ -65,7 +65,7 @@ fs.exists(configPath, (exists) => {
     socket = new Socket(config!, saveSettings)
     if(config!.most) {
       console.log('creating pi most in main')
-      piMost = new PiMost()
+      piMost = new PiMost(socket)
     }
 
     if(config!.canbus) {

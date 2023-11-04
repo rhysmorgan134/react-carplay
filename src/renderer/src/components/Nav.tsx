@@ -11,7 +11,6 @@ import ExitToApp from '@mui/icons-material/ExitToApp';
 export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
   const { pathname } = useLocation()
-console.log(window.api)
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };

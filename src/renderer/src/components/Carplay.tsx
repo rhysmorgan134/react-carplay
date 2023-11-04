@@ -88,6 +88,8 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           }
           clearRetryTimeout()
           const { message: video } = ev.data
+          video.data.length > 20000 ? console.log("key frame") : null
+          // console.log("feeding", video.data.length)
           jmuxer.feed({
             video: video.data,
             duration: 0
@@ -204,7 +206,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
 
   return (
     <div
-      style={pathname === '/' ? { height: '100%', touchAction: 'none' } : { display: 'none' }}
+      style={pathname === '/' ? { height: '100%', touchAction: 'none' } : { height: '1px' }}
       id={'main'}
       className="App"
       ref={mainElem}
