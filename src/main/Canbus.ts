@@ -2,6 +2,7 @@
 import * as can from "socketcan";
 import EventEmitter from 'events'
 import { CanConfig } from "./Globals";
+import { Socket } from "./Socket";
 
 type CanMask = {
   id: number,
@@ -17,7 +18,8 @@ export class Canbus extends EventEmitter {
   masks: CanMask[]
   reverse: boolean
   lights: boolean
-  constructor(canChannel: string, subscriptions: CanConfig = {}) {
+  socket: Socket
+  constructor(canChannel: string, socket: Socket, subscriptions: CanConfig = {}) {
     super();
     this.canChannel = canChannel
     this.subscriptions = subscriptions
@@ -25,6 +27,7 @@ export class Canbus extends EventEmitter {
     this.masks = []
     this.reverse = false
     this.lights = false
+    this.socket = socket
     Object.keys(this.subscriptions).forEach((sub) => {
       this.masks.push({id: this.subscriptions[sub].canId, mask: this.subscriptions[sub].canId, invert: false})
     })
@@ -42,7 +45,7 @@ export class Canbus extends EventEmitter {
             tempReverse = false
           }
           if(tempReverse !== this.reverse) {
-            this.emit('reverse', this.reverse)
+            this.socket.sendReverse(this.reverse)
           }
           break
         case this.subscriptions?.lights?.canId:
@@ -54,7 +57,7 @@ export class Canbus extends EventEmitter {
             tempLights = false
           }
           if(tempLights !== this.lights) {
-            this.emit('lights', this.lights)
+            this.socket.sendLights(this.lights)
           }
           break
       }

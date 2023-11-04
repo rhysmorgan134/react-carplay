@@ -59,7 +59,7 @@ export function KeyBindings({ settings, updateKey }: KeyBindingsProps) {
     return(
       Object.keys(settings.bindings).map((shortcut) => {
         return (
-          <Grid xs={3}>
+          <Grid key={shortcut} xs={3}>
             <Item>
               <Typography>{shortcut}</Typography>
               <Button onClick={() => awaitKeyPress(shortcut)}>{settings.bindings[shortcut]}</Button>

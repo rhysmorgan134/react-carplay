@@ -2,8 +2,8 @@ import { app, shell, BrowserWindow, session, systemPreferences, IpcMainEvent, ip
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { DEFAULT_CONFIG } from 'node-carplay/node'
+import { Socket } from './Socket'
 import * as fs from 'fs';
-import {Stream} from 'socketmost/dist/modules/Messages'
 import { PiMost } from './PiMost'
 import {Canbus} from "./Canbus";
 import { ExtraConfig, KeyBindings } from "./Globals";
@@ -40,8 +40,10 @@ const EXTRA_CONFIG: ExtraConfig = {
   canConfig: {}
 }
 
-let piMost: PiMost | null
-let canbus: Canbus | null
+let piMost: null | PiMost
+let canbus: null | Canbus
+
+let socket: null | Socket
 
 fs.exists(configPath, (exists) => {
     if(exists) {
@@ -60,13 +62,14 @@ fs.exists(configPath, (exists) => {
       config = JSON.parse(fs.readFileSync(configPath).toString())
       console.log("config created and read")
     }
+    socket = new Socket(config!, saveSettings)
     if(config!.most) {
       console.log('creating pi most in main')
-      piMost = new PiMost()
+      piMost = new PiMost(socket)
     }
 
     if(config!.canbus) {
-      canbus = new Canbus('can0', config!.canConfig)
+      canbus = new Canbus('can0',  socket, config!.canConfig)
       canbus.on('lights', (data) => {
         console.log('lights', data)
       })
@@ -74,6 +77,7 @@ fs.exists(configPath, (exists) => {
         mainWindow?.webContents?.send('reverse', data)
       })
     }
+
 })
 
 const handleSettingsReq = (_: IpcMainEvent ) => {
@@ -197,7 +201,7 @@ app.whenReady().then(() => {
 
   ipcMain.on('saveSettings', saveSettings)
 
-  ipcMain.on('startStream', startMostStream)
+  // ipcMain.on('startStream', startMostStream)
 
   ipcMain.on('quit', quit)
 
@@ -217,16 +221,17 @@ app.whenReady().then(() => {
   })
 })
 
-const saveSettings = (_: IpcMainEvent, settings: ExtraConfig) => {
+const saveSettings = (settings: ExtraConfig) => {
+  console.log("saving settings", settings)
   fs.writeFileSync(configPath, JSON.stringify(settings))
 }
 
-const startMostStream = (_: IpcMainEvent, most: Stream) => {
-  console.log("stream request")
-  if(piMost) {
-    piMost.stream(most)
-  }
-}
+// const startMostStream = (_: IpcMainEvent, most: Stream) => {
+//   console.log("stream request")
+//   if(piMost) {
+//     piMost.stream(most)
+//   }
+// }
 
 const quit = (_: IpcMainEvent) => {
   app.quit()

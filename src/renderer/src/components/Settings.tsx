@@ -25,6 +25,7 @@ import MostStream from './MostStream'
 import { TransitionProps } from '@mui/material/transitions/transition'
 import { KeyBindings } from "./KeyBindings";
 import { Canbus } from "./Canbus";
+import { useCarplayStore } from "../store/store";
 
 interface SettingsProps {
   settings: ExtraConfig
@@ -46,6 +47,7 @@ function Settings({ settings }: SettingsProps) {
   const [openStream, setOpenStream] = useState<boolean>(false)
   const [openBindings, setOpenBindings] = useState<boolean>(false)
   const [openCan, setOpenCan] = useState<boolean>(false)
+  const saveSettings = useCarplayStore(state => state.saveSettings)
 
   const settingsChange = (key, value) => {
     console.log("changing settings to ", {
@@ -56,33 +58,33 @@ function Settings({ settings }: SettingsProps) {
   }
 
   const renderInput = {
-    height: () => <Grid xs={4}><TextField label={'HEIGHT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.height} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    height: () => <Grid key={'height'} xs={4}><TextField label={'HEIGHT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.height} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('height', parseInt(event.target.value))
     }}/></Grid>,
-    width: () => <Grid xs={4}><TextField label={'WIDTH'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.width} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    width: () => <Grid key={'width'} xs={4}><TextField label={'WIDTH'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.width} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('width', parseInt(event.target.value))
     }}/></Grid>,
-    dpi: () => <Grid xs={4}><TextField label={'DPI'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.dpi} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    dpi: () => <Grid key={'dpi'} xs={4}><TextField label={'DPI'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.dpi} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('dpi', parseInt(event.target.value))
     }}/></Grid>,
-    format: () => <Grid xs={4}><TextField label={'FORMAT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.format} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    format: () => <Grid key={'format'} xs={4}><TextField label={'FORMAT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.format} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('format', parseInt(event.target.value))
     }}/></Grid>,
-    fps: () => <Grid xs={4}><TextField label={'FPS'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.fps} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    fps: () => <Grid key={'fps'} xs={4}><TextField label={'FPS'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.fps} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('fps', parseInt(event.target.value))
     }}/></Grid>,
-    iBoxVersion: () => <Grid xs={4}><TextField label={'IBOX VERSION'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.iBoxVersion} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    iBoxVersion: () => <Grid key={'iBoxVersion'} xs={4}><TextField label={'IBOX VERSION'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.iBoxVersion} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('iBoxVersion', parseInt(event.target.value))
             }}/></Grid>,
-    mediaDelay: () => <Grid xs={4}><TextField label={'MEDIA DELAY'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.mediaDelay} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    mediaDelay: () => <Grid key={'mediaDelay'} xs={4}><TextField label={'MEDIA DELAY'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.mediaDelay} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('mediaDelay', parseInt(event.target.value))
               }}/></Grid>,
-    phoneWorkMode: () => <Grid xs={4}><TextField label={'PHONE WORK MODE'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.phoneWorkMode} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    phoneWorkMode: () => <Grid key={'phoneWorkMode'} xs={4}><TextField label={'PHONE WORK MODE'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.phoneWorkMode} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('phoneWorkMode', parseInt(event.target.value))
                 }}/></Grid>,
     kiosk: () => {
       return (
-        <Grid xs={4}>
+        <Grid key={'kiosk'} xs={4}>
           <FormControl>
             <FormControlLabel id={'kiosk'}  label={'KIOSK'} control={<Checkbox checked={activeSettings.kiosk} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               settingsChange('kiosk', event.target.checked)
@@ -93,7 +95,7 @@ function Settings({ settings }: SettingsProps) {
     },
     piMost: () => {
       return (
-        <Grid xs={4}>
+        <Grid key={'pimost'} xs={4}>
           <FormControl>
             <FormControlLabel id={'pimost'}  label={'PIMOST'} control={<Checkbox checked={activeSettings.piMost} onChange={(_: React.ChangeEvent<HTMLInputElement>) => {
               // settingsChange('piMost', event.target.checked)
@@ -110,7 +112,7 @@ function Settings({ settings }: SettingsProps) {
     },
     nightMode: () => {
       return (
-        <Grid xs={4}>
+        <Grid key={'nightMode'} xs={4}>
           <FormGroup>
             <FormControlLabel id={'nightMode'} label={'DARK MODE'} control={<Checkbox checked={activeSettings.nightMode} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               settingsChange('nightMode', event.target.checked)
@@ -121,7 +123,7 @@ function Settings({ settings }: SettingsProps) {
     },
     wifiType: () => {
       return (
-        <Grid xs={4}>
+        <Grid key={"WIFI"} xs={4}>
           <FormControl>
             <FormLabel id={"WIFI"}>MIC TYPE</FormLabel>
             <RadioGroup row value={activeSettings.wifiType} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +138,7 @@ function Settings({ settings }: SettingsProps) {
     },
     micType: () => {
       return (
-        <Grid xs={4}>
+        <Grid key={"micType"} xs={4}>
           <FormControl>
             <FormLabel id={"micType"}>MIC TYPE</FormLabel>
             <RadioGroup row value={activeSettings.micType} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,7 +154,7 @@ function Settings({ settings }: SettingsProps) {
   }
   const renderCameras = () => {
     return  (
-      <Grid xs={6}>
+      <Grid key={'cameras'} xs={6}>
         <FormControl fullWidth>
           <InputLabel id={'cameraSelectLabel'}>CAMERA</InputLabel>
           <Select
@@ -165,7 +167,7 @@ function Settings({ settings }: SettingsProps) {
             }}
           >
             {cameras.map((camera) => {
-              return <MenuItem value={camera.deviceId}>{camera.label}</MenuItem>
+              return <MenuItem key={camera.deviceId} value={camera.deviceId}>{camera.label}</MenuItem>
             })}
           </Select>
         </FormControl>
@@ -188,7 +190,7 @@ function Settings({ settings }: SettingsProps) {
             }}
           >
             {microphones.map((microphone) => {
-              return <MenuItem value={microphone.deviceId}>{microphone.label}</MenuItem>
+              return <MenuItem key={microphone.deviceId} value={microphone.deviceId}>{microphone.label}</MenuItem>
             })}
           </Select>
         </FormControl>
@@ -220,7 +222,6 @@ function Settings({ settings }: SettingsProps) {
     }
   }, []);
   const renderSettings = () => {
-    console.log(activeSettings)
     return (
       <Grid container spacing={2}>
         {Object.keys(activeSettings).map((k) => {
@@ -232,7 +233,7 @@ function Settings({ settings }: SettingsProps) {
         </Grid>
         <Grid xs={12} >
           <Box>
-            <Button onClick={() => window.api.saveSettings(activeSettings)}>SAVE</Button>
+            <Button onClick={() => saveSettings(activeSettings)}>SAVE</Button>
             <Button onClick={() => setOpenBindings(true)}>BINDINGS</Button>
             <Button onClick={() => setOpenCan(true)}>CANBUS</Button>
           </Box>
