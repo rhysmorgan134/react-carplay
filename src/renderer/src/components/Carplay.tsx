@@ -211,7 +211,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       className="App"
       ref={mainElem}
     >
-      {(noDevice || isLoading) && (
+      {((noDevice || isLoading) && pathname === '/') && (
         <div
           style={{
             position: 'absolute',

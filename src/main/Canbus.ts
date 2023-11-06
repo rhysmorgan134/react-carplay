@@ -31,6 +31,7 @@ export class Canbus extends EventEmitter {
     Object.keys(this.subscriptions).forEach((sub) => {
       this.masks.push({id: this.subscriptions[sub].canId, mask: this.subscriptions[sub].canId, invert: false})
     })
+    console.log(this.masks)
     this.channel.setRxFilters(this.masks)
 
     this.channel.addListener("onMessage", (msg) => {
@@ -38,14 +39,16 @@ export class Canbus extends EventEmitter {
       switch (msg.id) {
         case this.subscriptions?.reverse?.canId:
           data = msg.data[this.subscriptions!.reverse!.byte] & this.subscriptions!.reverse!.mask
-          let tempReverse = this.reverse
+          console.log("reverse", data)
+          let tempReverse
           if (data) {
             tempReverse = true
           } else {
             tempReverse = false
           }
           if(tempReverse !== this.reverse) {
-            this.socket.sendReverse(this.reverse)
+            this.socket.sendReverse(tempReverse)
+            this.reverse = tempReverse
           }
           break
         case this.subscriptions?.lights?.canId:

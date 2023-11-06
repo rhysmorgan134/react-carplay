@@ -13,6 +13,7 @@ interface CarplayStore {
 interface StatusStore {
   reverse: boolean,
   lights: boolean,
+  setReverse: (reverse: boolean) => void
 }
 
 export const useCarplayStore = create<CarplayStore>()((set) =>({
@@ -29,12 +30,25 @@ export const useCarplayStore = create<CarplayStore>()((set) =>({
   }
 }))
 
+export const useStatusStore = create<StatusStore>()((set) => ({
+  reverse: false,
+  lights: false,
+  setReverse: (reverse) => {
+    set(() => ({reverse: reverse}))
+  }
+}))
+
 const URL = 'http://localhost:4000'
 const socket = io(URL)
 
 socket.on('settings', (settings: ExtraConfig) => {
   console.log("received settings", settings)
   useCarplayStore.setState(() => ({settings: settings}))
+})
+
+socket.on('reverse', (reverse) => {
+  console.log("reverse data", reverse)
+  useStatusStore.setState(() => ({reverse: reverse}))
 })
 
 
