@@ -69,6 +69,7 @@ fs.exists(configPath, (exists) => {
     }
 
     if(config!.canbus) {
+      console.log("Configuring can", config!.canConfig)
       canbus = new Canbus('can0',  socket, config!.canConfig)
       canbus.on('lights', (data) => {
         console.log('lights', data)
