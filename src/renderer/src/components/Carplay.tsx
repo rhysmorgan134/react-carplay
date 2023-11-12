@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { RotatingLines } from 'react-loader-spinner'
 //import './App.css'
 import {
@@ -6,16 +6,19 @@ import {
   requestDevice,
   CommandMapping,
 } from 'node-carplay/web'
-import JMuxer from 'jmuxer'
 import { CarPlayWorker } from './worker/types'
 import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig} from "../../../main/Globals";
 import { useCarplayStore } from "../store/store";
+import { InitEvent } from './worker/render/RenderEvents'
 
 const width = window.innerWidth
 const height = window.innerHeight
+
+const videoChannel = new MessageChannel()
+const micChannel = new MessageChannel()
 
 const RETRY_DELAY_MS = 15000
 
@@ -31,11 +34,14 @@ interface CarplayProps {
 
 function Carplay({ receivingVideo, setReceivingVideo, settings, command, commandCounter }: CarplayProps) {
   const [isPlugged, setPlugged] = useState(false)
-  const [noDevice, setNoDevice] = useState(false)
-  // const [receivingVideo, setReceivingVideo] = useState(false)
-  const [jmuxer, setJmuxer] = useState<JMuxer | null>(null)
+  const [deviceFound, setDeviceFound] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
+    null,
+  )
   const mainElem = useRef<HTMLDivElement>(null)
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const stream = useCarplayStore(state => state.stream)
@@ -48,15 +54,44 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   // const pathname = "/"
   console.log(pathname)
 
-  const carplayWorker = useMemo(
-    () =>
-      new Worker(new URL('./worker/carplay.ts', import.meta.url), {
-        type: 'module'
-      }) as CarPlayWorker,
-    []
-  )
+  const renderWorker = useMemo(() => {
+    if (!canvasElement) return
 
-  const { processAudio, startRecording, stopRecording } = useCarplayAudio(carplayWorker, settings.microphone)
+    const worker = new Worker(
+      new URL('./worker/render/Render.worker.ts', import.meta.url),
+    )
+    const canvas = canvasElement.transferControlToOffscreen()
+    worker.postMessage(new InitEvent(canvas, videoChannel.port2), [
+      canvas,
+      videoChannel.port2,
+    ])
+    return worker
+  }, [canvasElement])
+
+  useLayoutEffect(() => {
+    if (canvasRef.current) {
+      setCanvasElement(canvasRef.current)
+    }
+  }, [])
+
+  const carplayWorker = useMemo(() => {
+    const worker = new Worker(
+      new URL('./worker/CarPlay.worker.ts', import.meta.url),
+      {type: 'module'}
+    ) as CarPlayWorker
+    const payload = {
+      videoPort: videoChannel.port1,
+      microphonePort: micChannel.port1,
+    }
+    worker.postMessage({ type: 'initialise', payload }, [
+      videoChannel.port1,
+      micChannel.port1,
+    ])
+    return worker
+  }, [])
+
+  const { processAudio, getAudioPlayer, startRecording, stopRecording } =
+    useCarplayAudio(carplayWorker, micChannel.port2)
 
   const clearRetryTimeout = useCallback(() => {
     if (retryTimeoutRef.current) {
@@ -80,26 +115,13 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
         case 'unplugged':
           setPlugged(false)
           break
-        case 'video':
-          // if document is hidden we dont need to feed frames
-          if (!jmuxer) return
-          if (!receivingVideo) {
-            setReceivingVideo(true)
-          }
+        case 'requestBuffer':
           clearRetryTimeout()
-          const { message: video } = ev.data
-          //video.data.length > 20000 ? console.log("key frame") : null
-          // console.log("feeding", video.data.length)
-          jmuxer.feed({
-            video: video.data,
-            duration: 0
-          })
+          getAudioPlayer(ev.data.message)
           break
         case 'audio':
           clearRetryTimeout()
-
-          const { message: audio } = ev.data
-          processAudio(audio)
+          processAudio(ev.data.message)
           break
         case 'media':
           //TODO: implement
@@ -131,22 +153,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           break
       }
     }
-  }, [carplayWorker, jmuxer, processAudio, clearRetryTimeout, receivingVideo, startRecording, stopRecording])
-
-  // video init
-  useEffect(() => {
-    const jmuxer = new JMuxer({
-      node: 'video',
-      mode: 'video',
-      fps: config.fps,
-      flushingTime: 0,
-      debug: false
-    })
-    setJmuxer(jmuxer)
-    return () => {
-      jmuxer.destroy()
-    }
-  }, [])
+  }, [carplayWorker, clearRetryTimeout, getAudioPlayer, processAudio, renderWorker, startRecording, stopRecording])
 
   useEffect(() => {
     const element = mainElem?.current
@@ -170,10 +177,10 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       const device = request ? await requestDevice() : await findDevice()
       if (device) {
         console.log('starting in check')
-        setNoDevice(false)
+        setDeviceFound(true)
         carplayWorker.postMessage({ type: 'start', payload: config })
       } else {
-        setNoDevice(true)
+        setDeviceFound(false)
       }
     },
     [carplayWorker]
@@ -189,7 +196,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       const device = await findDevice()
       if (!device) {
         carplayWorker.postMessage({ type: 'stop' })
-        setNoDevice(true)
+        setDeviceFound(false)
       }
     }
 
@@ -202,7 +209,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
 
   const sendTouchEvent = useCarplayTouch(carplayWorker, width, height)
 
-  const isLoading = !noDevice && !receivingVideo
+  const isLoading = !isPlugged
 
   return (
     <div
@@ -211,7 +218,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       className="App"
       ref={mainElem}
     >
-      {((noDevice || isLoading) && pathname === '/') && (
+      {((deviceFound === false || isLoading) && pathname === '/') && (
         <div
           style={{
             position: 'absolute',
@@ -222,7 +229,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
             alignItems: 'center'
           }}
         >
-          {noDevice && (
+          {deviceFound === false && (
             <button rel="noopener noreferrer">
               Plug-In Carplay Dongle and Press
             </button>
@@ -253,7 +260,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           display: 'flex'
         }}
       >
-        <video id="video" style={isPlugged ? { height: '100%' } : undefined} autoPlay muted />
+        <canvas ref={canvasRef} id={'video'} style={isPlugged ? { height: '100%' } : undefined} />
       </div>
     </div>
   )
