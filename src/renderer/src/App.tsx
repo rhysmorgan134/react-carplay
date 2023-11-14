@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Settings from "./components/Settings";
+import './App.css'
 import Info from "./components/Info";
 import Home from "./components/Home";
 import Nav from "./components/Nav";
