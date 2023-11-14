@@ -58,7 +58,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
     if (!canvasElement) return
 
     const worker = new Worker(
-      new URL('./worker/render/Render.worker.ts', import.meta.url),
+      new URL('./worker/render/Render.worker.ts', import.meta.url), {type: 'module'},
     )
     const canvas = canvasElement.transferControlToOffscreen()
     worker.postMessage(new InitEvent(canvas, videoChannel.port2), [
@@ -178,7 +178,8 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       if (device) {
         console.log('starting in check')
         setDeviceFound(true)
-        carplayWorker.postMessage({ type: 'start', payload: config })
+        setReceivingVideo(true)
+        carplayWorker.postMessage({ type: 'start', payload: {config} })
       } else {
         setDeviceFound(false)
       }
@@ -234,7 +235,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
               Plug-In Carplay Dongle and Press
             </button>
           )}
-          {isLoading && (
+          {deviceFound && (
             <RotatingLines
               strokeColor="grey"
               strokeWidth="5"

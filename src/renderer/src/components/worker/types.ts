@@ -35,7 +35,7 @@ export type KeyCommand = 'left' |
 
 export type Command =
   | { type: 'stop' }
-  | { type: 'start'; payload: Partial<DongleConfig> }
+  | { type: 'start'; payload: StartPayload }
   | { type: 'touch'; payload: { x: number; y: number; action: TouchAction } }
   | { type: 'initialise'; payload: InitialisePayload }
   | { type: 'audioBuffer'; payload: AudioPlayerPayload }

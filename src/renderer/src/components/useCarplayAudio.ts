@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import './App.css'
 import {
   AudioCommand,
   AudioData,
@@ -33,7 +32,7 @@ const useCarplayAudio = (
       player.volume(defaultAudioVolume)
       player.start()
       worker.postMessage({
-        type: 'audioBuffer',
+        type: 'audioPlayer',
         payload: {
           sab: player.getRawBuffer(),
           decodeType,

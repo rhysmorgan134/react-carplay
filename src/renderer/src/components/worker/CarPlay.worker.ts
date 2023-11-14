@@ -86,6 +86,7 @@ onmessage = async (event: MessageEvent<Command>) => {
         const { x, y, action } = event.data.payload
         const data = new SendTouch(x, y, action)
         carplayWeb.dongleDriver.send(data)
+      } else {
       }
       break
     case 'stop':
