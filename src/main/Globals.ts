@@ -1,8 +1,9 @@
-import { Stream } from "socketmost/dist/modules/Messages";
+import { Source, Stream } from "socketmost/dist/modules/Messages";
 import { DongleConfig } from 'node-carplay/node'
 
 export type Most = {
   stream?: Stream
+  mic?: Source
 }
 
 export type ExtraConfig = DongleConfig & {

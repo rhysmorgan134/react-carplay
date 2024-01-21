@@ -1,13 +1,16 @@
 import { create } from 'zustand'
 import { ExtraConfig } from "../../../main/Globals";
 import { io } from 'socket.io-client'
-import { Stream } from "socketmost/dist/modules/Messages";
+import { Source, Stream } from "socketmost/dist/modules/Messages";
+import { MessageNames } from "../../../main/Socket";
 
 interface CarplayStore {
   settings: null | ExtraConfig,
   saveSettings: (settings: ExtraConfig) => void
   getSettings: () => void
   stream: (stream: Stream) => void
+  startRecord: (data: Source) => void
+  stopRecord: (data: Source) => void
 }
 
 interface StatusStore {
@@ -27,6 +30,12 @@ export const useCarplayStore = create<CarplayStore>()((set) =>({
   },
   stream: (stream) => {
     socket.emit('stream', stream)
+  },
+  startRecord: (data: Source) => {
+    socket.emit(MessageNames.StartRecord, data)
+  },
+  stopRecord: (data: Source) => {
+    socket.emit(MessageNames.StopRecord, data)
   }
 }))
 

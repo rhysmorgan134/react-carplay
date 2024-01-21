@@ -44,7 +44,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   )
   const mainElem = useRef<HTMLDivElement>(null)
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const stream = useCarplayStore(state => state.stream)
+  const [stream, startRecord, stopRecord] = useCarplayStore(state => [state.stream, state.startRecord, state.stopRecord])
   const config = {
     fps: settings.fps,
     width: width,
@@ -132,9 +132,11 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           } = ev.data
           switch (value) {
             case CommandMapping.startRecordAudio:
+              startRecord(settings.most.mic)
               startRecording()
               break
             case CommandMapping.stopRecordAudio:
+              stopRecord(settings.most.mic)
               stopRecording()
               break
             case CommandMapping.requestHostUI:

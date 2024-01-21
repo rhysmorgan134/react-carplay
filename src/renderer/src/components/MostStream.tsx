@@ -1,7 +1,7 @@
-import { Stream } from 'socketmost/dist/modules/Messages'
+import { Source, Stream } from "socketmost/dist/modules/Messages";
 import Grid from '@mui/material/Unstable_Grid2'
 import React, { useState } from 'react'
-import { Button, TextField } from '@mui/material'
+import { Button, TextField, Typography } from '@mui/material'
 
 interface SettingsProps {
   setSettings: (key: any, value: any) => void,
@@ -16,9 +16,20 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
     sourceAddrHigh: -1,
     sourceAddrLow: -1
   })
+  const [micSettings, setMicSettings] = useState<Source>({
+    fBlockID: -1,
+    instanceID: -1,
+    sourceNr: -1,
+    sourceAddrHigh: -1,
+    sourceAddrLow: -1
+  })
 
   const updateStream = (key, value) => {
     setStream((prevState) => ({ ...prevState, [key]: value }))
+  }
+
+  const updateMic = (key, value) => {
+    setMicSettings((prevState) => ({...prevState, [key]: value}))
   }
 
   const handleSave = () => {
@@ -26,7 +37,11 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
     for(const [k, v] of Object.entries(stream)) {
       parsedNumeric[k] = parseInt(v)
     }
-    setSettings('most', {stream: {...parsedNumeric}})
+    let micNumeric = {}
+    for(const [k, v] of Object.entries(micSettings)) {
+      micNumeric[k] = parseInt(v)
+    }
+    setSettings('most', {stream: {...parsedNumeric}, micSettings: {...micNumeric}})
     setSettings('piMost', true)
     setOpenStream(false)
   }
@@ -86,6 +101,66 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
           }}
           error={parseInt(stream.sourceAddrLow) !== null ? false : true}
           helperText={parseInt(stream.sourceAddrLow) !== null ? '' : 'Format must be in hex'}
+        />
+      </Grid>
+      <Grid xs={12}>
+        <Typography>
+          Microphone Settings
+        </Typography>
+      </Grid>
+      <Grid xs={4}>
+        <TextField
+          label={'FBLOCK-ID'}
+          value={stream.fBlockID}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateMic('fBlockID', event.target.value)
+          }}
+          error={parseInt(micSettings.fBlockID) !== null ? false : true}
+          helperText={parseInt(micSettings.fBlockID) !== null ? '' : 'Format must be in hex'}
+        />
+      </Grid>
+      <Grid xs={4}>
+        <TextField
+          label={'INSTANCE-ID'}
+          value={micSettings.instanceID}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateMic('instanceID', event.target.value)
+          }}
+          error={parseInt(micSettings.instanceID) !== null ? false : true}
+          helperText={parseInt(micSettings.instanceID) !== null ? '' : 'Format must be in hex'}
+        />
+      </Grid>
+      <Grid xs={4}>
+        <TextField
+          label={'SINK NUMBER'}
+          value={micSettings.sourceNr}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateMic('sinkNr', event.target.value)
+          }}
+          error={parseInt(micSettings.sourceNr) !== null ? false : true}
+          helperText={parseInt(micSettings.sourceNr) !== null ? '' : 'Format must be in hex'}
+        />
+      </Grid>
+      <Grid xs={6}>
+        <TextField
+          label={'SOURCE ADDRESS HIGH'}
+          value={micSettings.sourceAddrHigh}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateMic('sourceAddrHigh', event.target.value)
+          }}
+          error={parseInt(micSettings.sourceAddrHigh) !== null ? false : true}
+          helperText={parseInt(micSettings.sourceAddrHigh) !== null ? '' : 'Format must be in hex'}
+        />
+      </Grid>
+      <Grid xs={6}>
+        <TextField
+          label={'SOURCE ADDRESS LOW'}
+          value={micSettings.sourceAddrLow}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateMic('sourceAddrLow', event.target.value)
+          }}
+          error={parseInt(micSettings.sourceAddrLow) !== null ? false : true}
+          helperText={parseInt(micSettings.sourceAddrLow) !== null ? '' : 'Format must be in hex'}
         />
       </Grid>
       <Grid xs={12}>

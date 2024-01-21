@@ -1,13 +1,15 @@
 import { ExtraConfig } from "./Globals";
 import { Server } from 'socket.io'
 import { EventEmitter } from 'events'
-import { Stream } from "socketmost/dist/modules/Messages";
+import { Source, Stream } from "socketmost/dist/modules/Messages";
 
 export enum MessageNames {
   Connection = 'connection',
   GetSettings = 'getSettings',
   SaveSettings = 'saveSettings',
-  Stream = 'stream'
+  Stream = 'stream',
+  StartRecord = 'startRecord',
+  StopRecord = 'stopRecord'
 }
 
 export class Socket extends EventEmitter {
@@ -37,6 +39,14 @@ export class Socket extends EventEmitter {
 
       socket.on(MessageNames.Stream, (stream: Stream) => {
         this.emit(MessageNames.Stream, stream)
+      })
+
+      socket.on(MessageNames.StartRecord, (data: Source) => {
+        this.emit(MessageNames.StartRecord, data)
+      })
+
+      socket.on(MessageNames.StopRecord, (data: Source) => {
+        this.emit(MessageNames.StopRecord, data)
       })
     })
 

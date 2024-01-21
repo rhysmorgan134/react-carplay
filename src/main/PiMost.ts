@@ -1,5 +1,5 @@
 import { SocketMost, SocketMostClient } from 'socketmost'
-import { Stream } from "socketmost/dist/modules/Messages";
+import { Source, Stream } from "socketmost/dist/modules/Messages";
 import { MessageNames, Socket } from "./Socket";
 
 export class PiMost {
@@ -15,10 +15,26 @@ export class PiMost {
     this.socket.on(MessageNames.Stream, (stream) => {
       this.stream(stream)
     })
+
+    this.socket.on(MessageNames.StartRecord, (data) => {
+      this.connectMic(data)
+    })
+
+    this.socket.on(MessageNames.StopRecord, (data) => {
+      this.disconnectMic(data)
+    })
   }
 
   stream(stream: Stream) {
     this.socketMostClient.stream(stream)
+  }
+
+  connectMic(data: Source) {
+    this.socketMostClient.connectSource(data)
+  }
+
+  disconnectMic(data: Source) {
+    this.socketMostClient.disconnectSource(data)
   }
 }
 
