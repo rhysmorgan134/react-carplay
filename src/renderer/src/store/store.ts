@@ -29,9 +29,11 @@ export const useCarplayStore = create<CarplayStore>()((set) =>({
     socket.emit('getSettings')
   },
   stream: (stream) => {
+    console.log("start stream request", stream)
     socket.emit('stream', stream)
   },
   startRecord: (data: Source) => {
+    console.log("start record request", data)
     socket.emit(MessageNames.StartRecord, data)
   },
   stopRecord: (data: Source) => {

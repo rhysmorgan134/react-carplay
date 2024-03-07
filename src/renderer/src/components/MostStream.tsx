@@ -111,7 +111,7 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
       <Grid xs={4}>
         <TextField
           label={'FBLOCK-ID'}
-          value={stream.fBlockID}
+          value={micSettings.fBlockID}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             updateMic('fBlockID', event.target.value)
           }}
@@ -135,7 +135,7 @@ function MostStream({ setSettings, setOpenStream }: SettingsProps) {
           label={'SINK NUMBER'}
           value={micSettings.sourceNr}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            updateMic('sinkNr', event.target.value)
+            updateMic('sourceNr', event.target.value)
           }}
           error={parseInt(micSettings.sourceNr) !== null ? false : true}
           helperText={parseInt(micSettings.sourceNr) !== null ? '' : 'Format must be in hex'}
