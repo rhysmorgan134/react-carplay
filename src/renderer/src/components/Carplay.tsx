@@ -169,6 +169,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
   }, []);
 
   useEffect(() => {
+    console.log("posting", command)
     carplayWorker.postMessage({type: 'keyCommand', command: command})
   }, [commandCounter]);
 
