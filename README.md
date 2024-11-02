@@ -2,7 +2,7 @@
 
 <a href="https://www.buymeacoffee.com/rhysm" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
-This is a react based carplay application, that utilised the Carlinkit dongle to provide raspberry pi (and others) compatible
+This is a react based carplay application, that utilised the Carlinkit [dongle](https://forums.moderndaymods.com/t/carplay-adapter/161) (cpc200-ccpa or cpc200-ccpm)  to provide raspberry pi (and others) compatible
 carplay application.
 
 ## Features
