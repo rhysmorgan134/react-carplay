@@ -93,6 +93,23 @@ function Settings({ settings }: SettingsProps) {
         </Grid>
       )
     },
+    piMost: () => {
+      return (
+        <Grid key={'pimost'} xs={4}>
+          <FormControl>
+            <FormControlLabel id={'pimost'}  label={'PIMOST'} control={<Checkbox disabled={true} checked={false} onChange={(_: React.ChangeEvent<HTMLInputElement>) => {
+              // settingsChange('piMost', event.target.checked)
+              if(activeSettings.piMost) {
+                settingsChange('piMost', false)
+                settingsChange('most', {})
+              } else {
+                setOpenStream(true)
+              }
+            }}/>} />
+          </FormControl>
+        </Grid>
+      )
+    },
     nightMode: () => {
       return (
         <Grid key={'nightMode'} xs={4}>
