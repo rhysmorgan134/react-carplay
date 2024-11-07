@@ -4,7 +4,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { DEFAULT_CONFIG } from 'node-carplay/node'
 import { Socket } from './Socket'
 import * as fs from 'fs';
-import { PiMost } from './PiMost'
 import {Canbus} from "./Canbus";
 import { ExtraConfig, KeyBindings } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
@@ -40,7 +39,6 @@ const EXTRA_CONFIG: ExtraConfig = {
   canConfig: {}
 }
 
-let piMost: null | PiMost
 let canbus: null | Canbus
 
 let socket: null | Socket
@@ -63,10 +61,6 @@ fs.exists(configPath, (exists) => {
       console.log("config created and read")
     }
     socket = new Socket(config!, saveSettings)
-    if(config!.most) {
-      console.log('creating pi most in main')
-      piMost = new PiMost(socket)
-    }
 
     if(config!.canbus) {
       console.log("Configuring can", config!.canConfig)
@@ -136,7 +130,7 @@ function createWindow(): void {
   mainWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
     event.preventDefault()
     const selectedDevice = details.deviceList.find((device) => {
-      return device.vendorId === 4884 && (device.productId === 5408 || device.productId === 5408)
+      return device.vendorId === 4884 && (device.productId === 5408 || device.productId === 5409)
     })
 
     callback(selectedDevice?.deviceId)

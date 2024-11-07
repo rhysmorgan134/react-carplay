@@ -5,7 +5,7 @@
       <paths name="192.168.0.208">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/pi/react-carplay-new/react-carplay" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/pi/react-carplay" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

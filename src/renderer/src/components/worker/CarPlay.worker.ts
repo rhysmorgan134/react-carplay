@@ -6,7 +6,7 @@ import CarplayWeb, {
   SendTouch,
   findDevice,
 } from 'node-carplay/web'
-import { AudioPlayerKey, Command } from './types'
+import { AudioPlayerKey, Command, KeyCommand } from "./types";
 import { RenderEvent } from './render/RenderEvents'
 import { RingBuffer } from 'ringbuf.js'
 import { createAudioPlayerKey } from './utils'
@@ -99,6 +99,12 @@ onmessage = async (event: MessageEvent<Command>) => {
         carplayWeb.dongleDriver.send(data)
       }
       break
+    case 'keyCommand':
+      const command: KeyCommand = event.data.command
+      const data = new SendCommand(command)
+      if (carplayWeb) {
+        carplayWeb.dongleDriver.send(data)
+      }
   }
 }
 

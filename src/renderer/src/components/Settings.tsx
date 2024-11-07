@@ -97,7 +97,7 @@ function Settings({ settings }: SettingsProps) {
       return (
         <Grid key={'pimost'} xs={4}>
           <FormControl>
-            <FormControlLabel id={'pimost'}  label={'PIMOST'} control={<Checkbox checked={activeSettings.piMost} onChange={(_: React.ChangeEvent<HTMLInputElement>) => {
+            <FormControlLabel id={'pimost'}  label={'PIMOST'} control={<Checkbox disabled={true} checked={false} onChange={(_: React.ChangeEvent<HTMLInputElement>) => {
               // settingsChange('piMost', event.target.checked)
               if(activeSettings.piMost) {
                 settingsChange('piMost', false)

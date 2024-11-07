@@ -36,10 +36,10 @@ echo "Downloading AppImage"
 
 if getconf LONG_BIT | grep -q '64'; then
 	echo "64 Bit Detected"
- 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.2/react-carplay-4.0.2-arm64.AppImage --output /home/$USER/Desktop/Carplay.AppImage
+ 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.3/react-carplay-4.0.3-arm64.AppImage --output /home/$USER/Desktop/Carplay.AppImage
 else
-	echo "32 Bit Detected"
- 	curl -L https://github.com/rhysmorgan134/react-carplay/releases/download/v4.0.2/react-carplay-4.0.2-armv7l.AppImage --output /home/$USER/Desktop/Carplay.AppImage
+	echo "32 Bit OS not supported"
+ 	exit 1
 fi
 
 echo "Download Done"
