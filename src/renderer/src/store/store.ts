@@ -13,6 +13,8 @@ interface CarplayStore {
 interface StatusStore {
   reverse: boolean,
   lights: boolean,
+  isPlugged: boolean,
+  setPlugged: (plugged: boolean) => void,
   setReverse: (reverse: boolean) => void
 }
 
@@ -33,6 +35,10 @@ export const useCarplayStore = create<CarplayStore>()((set) =>({
 export const useStatusStore = create<StatusStore>()((set) => ({
   reverse: false,
   lights: false,
+  isPlugged: false,
+  setPlugged: (plugged) => {
+    set(() => ({isPlugged: plugged}))
+  },
   setReverse: (reverse) => {
     set(() => ({reverse: reverse}))
   }

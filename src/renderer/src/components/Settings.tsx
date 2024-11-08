@@ -58,28 +58,28 @@ function Settings({ settings }: SettingsProps) {
   }
 
   const renderInput = {
-    height: () => <Grid key={'height'} xs={4}><TextField label={'HEIGHT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.height} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    height: () => <Grid key={'height'} xs={4}><TextField label={'HEIGHT'} type={"Number"} value={activeSettings.height} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('height', parseInt(event.target.value))
     }}/></Grid>,
-    width: () => <Grid key={'width'} xs={4}><TextField label={'WIDTH'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.width} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    width: () => <Grid key={'width'} xs={4}><TextField label={'WIDTH'} type={"Number"} value={activeSettings.width} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('width', parseInt(event.target.value))
     }}/></Grid>,
-    dpi: () => <Grid key={'dpi'} xs={4}><TextField label={'DPI'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.dpi} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    dpi: () => <Grid key={'dpi'} xs={4}><TextField label={'DPI'} type={"Number"} value={activeSettings.dpi} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('dpi', parseInt(event.target.value))
     }}/></Grid>,
-    format: () => <Grid key={'format'} xs={4}><TextField label={'FORMAT'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.format} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    format: () => <Grid key={'format'} xs={4}><TextField label={'FORMAT'} type={"Number"} value={activeSettings.format} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('format', parseInt(event.target.value))
     }}/></Grid>,
-    fps: () => <Grid key={'fps'} xs={4}><TextField label={'FPS'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.fps} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    fps: () => <Grid key={'fps'} xs={4}><TextField label={'FPS'} type={"Number"} value={activeSettings.fps} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('fps', parseInt(event.target.value))
     }}/></Grid>,
-    iBoxVersion: () => <Grid key={'iBoxVersion'} xs={4}><TextField label={'IBOX VERSION'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.iBoxVersion} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    iBoxVersion: () => <Grid key={'iBoxVersion'} xs={4}><TextField label={'IBOX VERSION'} type={"Number"}inputProps={{ inputMode: 'numeric'}} value={activeSettings.iBoxVersion} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('iBoxVersion', parseInt(event.target.value))
             }}/></Grid>,
-    mediaDelay: () => <Grid key={'mediaDelay'} xs={4}><TextField label={'MEDIA DELAY'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.mediaDelay} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    mediaDelay: () => <Grid key={'mediaDelay'} xs={4}><TextField label={'MEDIA DELAY'} type={"Number"} value={activeSettings.mediaDelay} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('mediaDelay', parseInt(event.target.value))
               }}/></Grid>,
-    phoneWorkMode: () => <Grid key={'phoneWorkMode'} xs={4}><TextField label={'PHONE WORK MODE'} inputProps={{ inputMode: 'numeric'}} value={activeSettings.phoneWorkMode} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+    phoneWorkMode: () => <Grid key={'phoneWorkMode'} xs={4}><TextField label={'PHONE WORK MODE'} type={"Number"} value={activeSettings.phoneWorkMode} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
       settingsChange('phoneWorkMode', parseInt(event.target.value))
                 }}/></Grid>,
     kiosk: () => {

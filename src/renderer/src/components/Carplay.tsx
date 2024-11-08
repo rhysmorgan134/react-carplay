@@ -11,8 +11,9 @@ import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig} from "../../../main/Globals";
-import { useCarplayStore } from "../store/store";
+import { useCarplayStore, useStatusStore } from "../store/store";
 import { InitEvent } from './worker/render/RenderEvents'
+import { Typography } from "@mui/material";
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -33,7 +34,7 @@ interface CarplayProps {
 }
 
 function Carplay({ receivingVideo, setReceivingVideo, settings, command, commandCounter }: CarplayProps) {
-  const [isPlugged, setPlugged] = useState(false)
+  const [isPlugged, setPlugged] = useStatusStore(state => [state.isPlugged, state.setPlugged])
   const [deviceFound, setDeviceFound] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -219,7 +220,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       className="App"
       ref={mainElem}
     >
-      {((deviceFound === false || isLoading) && pathname === '/') && (
+      {(deviceFound === false || isLoading) && pathname === '/' && (
         <div
           style={{
             position: 'absolute',
@@ -231,18 +232,28 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           }}
         >
           {deviceFound === false && (
-            <button rel="noopener noreferrer">
-              Plug-In Carplay Dongle and Press
-            </button>
+            <div>
+              <Typography>Searching For Dongle</Typography>
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="96"
+                visible={true}
+              />
+            </div>
           )}
           {deviceFound && (
-            <RotatingLines
-              strokeColor="grey"
-              strokeWidth="5"
-              animationDuration="0.75"
-              width="96"
-              visible={true}
-            />
+            <div>
+              <Typography>Searching For Phone</Typography>
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="96"
+                visible={true}
+              />
+            </div>
           )}
         </div>
       )}
@@ -258,10 +269,15 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           width: '100%',
           padding: 0,
           margin: 0,
-          display: 'flex'
+          display: 'flex',
+          visibility: isPlugged ? 'visible' : 'hidden'
         }}
       >
-        <canvas ref={canvasRef} id={'video'} style={isPlugged ? { height: '100%' } : undefined} />
+        <canvas
+          ref={canvasRef}
+          id={'video'}
+          style={isPlugged ? { height: '100%' } : { height: '0%' }}
+        />
       </div>
     </div>
   )
