@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig} from "../../../main/Globals";
 import { useCarplayStore, useStatusStore } from "../store/store";
 import { InitEvent } from './worker/render/RenderEvents'
+import { Typography } from "@mui/material";
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -219,7 +220,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
       className="App"
       ref={mainElem}
     >
-      {((deviceFound === false || isLoading) && pathname === '/') && (
+      {(deviceFound === false || isLoading) && pathname === '/' && (
         <div
           style={{
             position: 'absolute',
@@ -231,18 +232,28 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           }}
         >
           {deviceFound === false && (
-            <button rel="noopener noreferrer">
-              Plug-In Carplay Dongle and Press
-            </button>
+            <div>
+              <Typography>Searching For Dongle</Typography>
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="96"
+                visible={true}
+              />
+            </div>
           )}
           {deviceFound && (
-            <RotatingLines
-              strokeColor="grey"
-              strokeWidth="5"
-              animationDuration="0.75"
-              width="96"
-              visible={true}
-            />
+            <div>
+              <Typography>Searching For Phone</Typography>
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="96"
+                visible={true}
+              />
+            </div>
           )}
         </div>
       )}
@@ -262,7 +273,11 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           visibility: isPlugged ? 'visible' : 'hidden'
         }}
       >
-        <canvas ref={canvasRef} id={'video'} style={isPlugged ? { height: '100%' } :  {height: '0%' }} />
+        <canvas
+          ref={canvasRef}
+          id={'video'}
+          style={isPlugged ? { height: '100%' } : { height: '0%' }}
+        />
       </div>
     </div>
   )
