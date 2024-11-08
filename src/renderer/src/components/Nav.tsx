@@ -7,9 +7,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import CameraIcon from '@mui/icons-material/Camera';
 import { Link, useLocation } from "react-router-dom";
 import ExitToApp from '@mui/icons-material/ExitToApp';
+import { useStatusStore } from "../store/store";
 
 export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
+  const [isPlugged] = useStatusStore(state => [state.isPlugged])
   const { pathname } = useLocation()
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -20,7 +22,7 @@ export default function Nav({ receivingVideo, settings }) {
   }
 
   return (
-    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={receivingVideo === true && pathname === '/' ? {minHeight: '0px', height: '0px'} : {}}>
+    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={receivingVideo === true && isPlugged ? {minHeight: '0px', height: '0px'} : {}}>
       <Tab icon={<PhoneIcon />} to={'/'} component={Link}/>
       <Tab icon={<SettingsIcon />} to={'/settings'}  component={Link}/>
       <Tab icon={<InfoIcon />} to={'/info'} component={Link}/>

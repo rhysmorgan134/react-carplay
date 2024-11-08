@@ -11,7 +11,7 @@ import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExtraConfig} from "../../../main/Globals";
-import { useCarplayStore } from "../store/store";
+import { useCarplayStore, useStatusStore } from "../store/store";
 import { InitEvent } from './worker/render/RenderEvents'
 
 const width = window.innerWidth
@@ -33,7 +33,7 @@ interface CarplayProps {
 }
 
 function Carplay({ receivingVideo, setReceivingVideo, settings, command, commandCounter }: CarplayProps) {
-  const [isPlugged, setPlugged] = useState(false)
+  const [isPlugged, setPlugged] = useStatusStore(state => [state.isPlugged, state.setPlugged])
   const [deviceFound, setDeviceFound] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
