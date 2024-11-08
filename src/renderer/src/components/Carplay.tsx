@@ -258,10 +258,11 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           width: '100%',
           padding: 0,
           margin: 0,
-          display: 'flex'
+          display: 'flex',
+          visibility: isPlugged ? 'visible' : 'hidden'
         }}
       >
-        <canvas ref={canvasRef} id={'video'} style={isPlugged ? { height: '100%' } : undefined} />
+        <canvas ref={canvasRef} id={'video'} style={isPlugged ? { height: '100%' } :  {height: '0%' }} />
       </div>
     </div>
   )

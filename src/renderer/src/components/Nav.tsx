@@ -22,7 +22,7 @@ export default function Nav({ receivingVideo, settings }) {
   }
 
   return (
-    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={receivingVideo === true && isPlugged ? {minHeight: '0px', height: '0px'} : {}}>
+    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={pathname === '/' && isPlugged ? {minHeight: '0px', height: '0px'} : {}}>
       <Tab icon={<PhoneIcon />} to={'/'} component={Link}/>
       <Tab icon={<SettingsIcon />} to={'/settings'}  component={Link}/>
       <Tab icon={<InfoIcon />} to={'/info'} component={Link}/>
