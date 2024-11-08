@@ -223,6 +223,8 @@ app.whenReady().then(() => {
 const saveSettings = (settings: ExtraConfig) => {
   console.log("saving settings", settings)
   fs.writeFileSync(configPath, JSON.stringify(settings))
+  app.relaunch()
+  app.exit()
 }
 
 // const startMostStream = (_: IpcMainEvent, most: Stream) => {
