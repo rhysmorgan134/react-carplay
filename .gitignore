@@ -14,6 +14,9 @@ assets
 .idea/workspace.xml
 *.xml
 
+# Hide OS X stuff
+.DS_Store
+
 =======
 node_modules
 dist
