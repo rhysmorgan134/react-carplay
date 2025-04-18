@@ -125,7 +125,7 @@ function Settings({ settings }: SettingsProps) {
       return (
         <Grid key={"WIFI"} xs={4}>
           <FormControl>
-            <FormLabel id={"WIFI"}>MIC TYPE</FormLabel>
+            <FormLabel id={"WIFI"}>WIFI</FormLabel>
             <RadioGroup row value={activeSettings.wifiType} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               settingsChange('wifiType', (event.target as HTMLInputElement).value)
             }}>
