@@ -5,29 +5,43 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
 import CameraIcon from '@mui/icons-material/Camera';
-import { Link, useLocation } from "react-router-dom";
 import ExitToApp from '@mui/icons-material/ExitToApp';
-import { useStatusStore } from "../store/store";
+import { Link, useLocation } from 'react-router-dom';
+import { useStatusStore } from '../store/store';
 
 export default function Nav({ receivingVideo, settings }) {
-  const [value, setValue] = React.useState(0);
-  const [isPlugged] = useStatusStore(state => [state.isPlugged])
-  const { pathname } = useLocation()
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const [isPlugged] = useStatusStore(state => [state.isPlugged]);
+  const { pathname } = useLocation();
+
+  if (receivingVideo && pathname === "/") {
+    return null;
+  }
+
+  const routeToIndex: Record<string, number> = {
+    '/': 0,
+    '/settings': 1,
+    '/info': 2,
+    '/camera': 3,
   };
+  const value = routeToIndex[pathname] ?? false;
 
   const quit = () => {
     window.api.quit()
   }
 
   return (
-    <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={pathname === '/' && isPlugged ? {minHeight: '0px', height: '0px'} : {}}>
-      <Tab icon={<PhoneIcon />} to={'/'} component={Link}/>
-      <Tab icon={<SettingsIcon />} to={'/settings'}  component={Link}/>
-      <Tab icon={<InfoIcon />} to={'/info'} component={Link}/>
-      {settings?.camera !== '' ? <Tab icon={<CameraIcon />} to={'/camera'} component={Link}/> : null}
-      <Tab icon={<ExitToApp />} onClick={() => quit()} />
+    <Tabs
+      value={value}
+      aria-label="icon label tabs example"
+      variant="fullWidth"
+    >
+      <Tab icon={<PhoneIcon />}      component={Link} to="/" />
+      <Tab icon={<SettingsIcon />}   component={Link} to="/settings" />
+      <Tab icon={<InfoIcon />}       component={Link} to="/info" />
+      {settings?.camera && (
+        <Tab icon={<CameraIcon />} component={Link} to="/camera" />
+      )}
+      <Tab icon={<ExitToApp />} onClick={quit} />
     </Tabs>
   );
 }
