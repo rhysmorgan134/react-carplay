@@ -1,6 +1,6 @@
 {
   "name": "react-carplay",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "Rhys Morgan",
@@ -40,12 +40,12 @@
     "react-router-dom": "^6.16.0",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
+    "socketcan": "^4.0.4",
+    "socketmost": "^2.0.6",
     "stream-browserify": "^3.0.0",
     "usb": "^2.10.0",
     "vite-plugin-esmodule": "^1.5.0",
-    "zustand": "^4.4.5",
-    "socketcan": "^4.0.4",
-    "socketmost": "^2.0.6"
+    "zustand": "^4.4.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",
@@ -59,7 +59,7 @@
     "@vitejs/plugin-react": "^4.0.4",
     "electron": "^27.0.3",
     "electron-builder": "^24.6.3",
-    "electron-vite": "^1.0.27",
+    "electron-vite": "^3.1.0",
     "eslint": "^8.47.0",
     "eslint-plugin-react": "^7.33.2",
     "prettier": "^3.0.2",
@@ -67,6 +67,6 @@
     "react-dom": "^18.2.0",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "typescript": "^5.1.6",
-    "vite": "^4.4.9"
+    "vite": "^6.3.2"
   }
 }

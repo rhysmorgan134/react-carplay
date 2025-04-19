@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Settings from "./components/Settings";
-import './App.css'
 import Info from "./components/Info";
 import Home from "./components/Home";
 import Nav from "./components/Nav";
@@ -10,7 +9,6 @@ import Camera from './components/Camera'
 import { Box, Modal } from '@mui/material'
 import { useCarplayStore, useStatusStore } from "./store/store";
 
-// rm -rf node_modules/.vite; npm run dev
 
 
 const style = {

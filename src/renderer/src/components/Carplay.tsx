@@ -232,7 +232,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           }}
         >
           {deviceFound === false && (
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <Typography>Searching For Dongle</Typography>
               <RotatingLines
                 strokeColor="grey"
@@ -244,7 +244,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
             </div>
           )}
           {deviceFound && (
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <Typography>Searching For Phone</Typography>
               <RotatingLines
                 strokeColor="grey"
