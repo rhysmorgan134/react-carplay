@@ -91,9 +91,10 @@ console.log(app.commandLine.hasSwitch('disable-webusb-security'))
 function createWindow(): void {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: config!.width,
-    height: config!.height,
-    kiosk: config!.kiosk,
+    width: Number(config!.width),
+    height: Number(config!.height),
+    useContentSize: true,
+    kiosk: false,
     show: false,
     frame: false,
     autoHideMenuBar: true,
@@ -106,6 +107,7 @@ function createWindow(): void {
       webSecurity: false
     }
   })
+
   app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
   // mainWindow.webContents.session.setDevicePermissionHandler((details) => {
@@ -130,8 +132,7 @@ function createWindow(): void {
     }
 
   })
-
-
+  
   mainWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
     event.preventDefault()
     const selectedDevice = details.deviceList.find((device) => {
@@ -142,8 +143,12 @@ function createWindow(): void {
   })
   // app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-  mainWindow.on('ready-to-show', () => {
+  // Delay Kiosk activation to avoid flashing Chromium's default background on startup
+  mainWindow.once('ready-to-show', () => {
     mainWindow.show()
+    if (config?.kiosk) {
+      mainWindow.setKiosk(true)
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
