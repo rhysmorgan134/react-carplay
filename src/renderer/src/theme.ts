@@ -11,12 +11,9 @@ const commonLayout = {
     backgroundColor: "inherit",
   },
   "::-webkit-scrollbar": { display: "none" },
-  ".App": {
-    backgroundColor: "inherit",
-  },
+  ".App": { backgroundColor: "inherit" },
 }
 
-// Common Tab bar overrides
 const commonTabs = {
   MuiTabs: {
     styleOverrides: {
@@ -50,6 +47,7 @@ export const lightTheme = createTheme({
     text: { primary: themeColors.textPrimaryLight, secondary: themeColors.textSecondaryLight },
     primary: { main: themeColors.highlightLight },
     divider: themeColors.dividerLight,
+    success: { main: themeColors.successMain },
   },
   components: {
     MuiCssBaseline: {
@@ -61,38 +59,25 @@ export const lightTheme = createTheme({
         },
       },
     },
-    MuiTabs: {
-      styleOverrides: {
-        root: { backgroundColor: themeColors.light },
-      },
-    },
+    MuiTabs: { styleOverrides: { root: { backgroundColor: themeColors.light } } },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: themeColors.highlightLight,
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: themeColors.highlightLight,
-          },
+          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: themeColors.highlightLight },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: themeColors.highlightLight },
         },
-        notchedOutline: {
-          borderColor: themeColors.dividerLight,
-        },
+        notchedOutline: { borderColor: themeColors.dividerLight },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
-        root: {
-          "&.Mui-focused": {
-            color: themeColors.highlightLight,
-          },
-        },
+        root: { "&.Mui-focused": { color: themeColors.highlightLight } },
       },
     },
     ...commonTabs,
   },
 })
+
 export const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -100,6 +85,7 @@ export const darkTheme = createTheme({
     text: { primary: themeColors.textPrimaryDark, secondary: themeColors.textSecondaryDark },
     primary: { main: themeColors.highlightDark },
     divider: themeColors.dividerDark,
+    success: { main: themeColors.successMain },
   },
   components: {
     MuiCssBaseline: {
@@ -111,35 +97,34 @@ export const darkTheme = createTheme({
         },
       },
     },
-    MuiTabs: {
-      styleOverrides: {
-        root: { backgroundColor: themeColors.dark },
-      },
-    },
+    MuiTabs: { styleOverrides: { root: { backgroundColor: themeColors.dark } } },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: themeColors.highlightDark,
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: themeColors.highlightDark,
-          },
+          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: themeColors.highlightDark },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: themeColors.highlightDark },
         },
-        notchedOutline: {
-          borderColor: themeColors.dividerDark,
-        },
+        notchedOutline: { borderColor: themeColors.dividerDark },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
-        root: {
-          "&.Mui-focused": {
-            color: themeColors.highlightDark,
-          },
-        },
+        root: { "&.Mui-focused": { color: themeColors.highlightDark } },
       },
     },
     ...commonTabs,
   },
 })
+
+export function initCursorHider(inactivityMs: number = 5000) {
+  let timer: ReturnType<typeof setTimeout>;
+  const reset = () => {
+    document.body.style.cursor = 'default';
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      document.body.style.cursor = 'none';
+    }, inactivityMs);
+  };
+  document.addEventListener('mousemove', reset);
+  reset();
+}

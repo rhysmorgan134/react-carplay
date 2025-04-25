@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { RotatingLines } from 'react-loader-spinner'
-//import './App.css'
 import {
   findDevice,
   requestDevice,
@@ -9,88 +8,77 @@ import {
 import { CarPlayWorker } from './worker/types'
 import useCarplayAudio from './useCarplayAudio'
 import { useCarplayTouch } from './useCarplayTouch'
-import { useLocation, useNavigate } from "react-router-dom";
-import { ExtraConfig} from "../../../main/Globals";
-import { useCarplayStore, useStatusStore } from "../store/store";
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ExtraConfig } from '../../../main/Globals'
+import { useCarplayStore, useStatusStore } from '../store/store'
 import { InitEvent } from './worker/render/RenderEvents'
-import { Typography } from "@mui/material";
-
-const width = window.innerWidth
-const height = window.innerHeight
+import { Typography } from '@mui/material'
 
 const videoChannel = new MessageChannel()
 const micChannel = new MessageChannel()
 
-const RETRY_DELAY_MS = 15000
-
-
-
 interface CarplayProps {
   receivingVideo: boolean
   setReceivingVideo: (receivingVideo: boolean) => void
-  settings: ExtraConfig,
-  command: string,
+  settings: ExtraConfig
+  command: string
   commandCounter: number
 }
 
-function Carplay({ receivingVideo, setReceivingVideo, settings, command, commandCounter }: CarplayProps) {
+const Carplay: React.FC<CarplayProps> = ({
+  receivingVideo,
+  setReceivingVideo,
+  settings,
+  command,
+  commandCounter,
+}) => {
   const [isPlugged, setPlugged] = useStatusStore(state => [state.isPlugged, state.setPlugged])
   const [deviceFound, setDeviceFound] = useState(false)
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(
-    null,
-  )
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(null)
   const mainElem = useRef<HTMLDivElement>(null)
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const stream = useCarplayStore(state => state.stream)
-  const config = {
-    fps: settings.fps,
-    width: width,
-    height: height,
-    mediaDelay: settings.mediaDelay
-  }
-  // const pathname = "/"
-  console.log(pathname)
 
+  // Initial config
+  const config = useRef({
+    fps: settings.fps,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    mediaDelay: settings.mediaDelay,
+  }).current
+
+  // Setup render worker
   const renderWorker = useMemo(() => {
     if (!canvasElement) return
-
     const worker = new Worker(
-      new URL('./worker/render/Render.worker.ts', import.meta.url), {type: 'module'},
+      new URL('./worker/render/Render.worker.ts', import.meta.url),
+      { type: 'module' },
     )
-    const canvas = canvasElement.transferControlToOffscreen()
-    worker.postMessage(new InitEvent(canvas, videoChannel.port2), [
-      canvas,
-      videoChannel.port2,
-    ])
+    const offscreen = canvasElement.transferControlToOffscreen()
+    worker.postMessage(new InitEvent(offscreen, videoChannel.port2), [offscreen, videoChannel.port2])
     return worker
   }, [canvasElement])
 
   useLayoutEffect(() => {
-    if (canvasRef.current) {
-      setCanvasElement(canvasRef.current)
-    }
+    if (canvasRef.current) setCanvasElement(canvasRef.current)
   }, [])
 
+  // Setup CarPlay worker
   const carplayWorker = useMemo(() => {
     const worker = new Worker(
       new URL('./worker/CarPlay.worker.ts', import.meta.url),
-      {type: 'module'}
+      { type: 'module' },
     ) as CarPlayWorker
-    const payload = {
-      videoPort: videoChannel.port1,
-      microphonePort: micChannel.port1,
-    }
-    worker.postMessage({ type: 'initialise', payload }, [
-      videoChannel.port1,
-      micChannel.port1,
-    ])
+    const payload = { videoPort: videoChannel.port1, microphonePort: micChannel.port1 }
+    worker.postMessage({ type: 'initialise', payload }, [videoChannel.port1, micChannel.port1])
     return worker
   }, [])
 
+  // Audio handling
   const { processAudio, getAudioPlayer, startRecording, stopRecording } =
     useCarplayAudio(carplayWorker, micChannel.port2)
 
@@ -101,17 +89,14 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
     }
   }, [])
 
-  // subscribe to worker messages
+  // Worker message handling
   useEffect(() => {
-    carplayWorker.onmessage = (ev) => {
+    carplayWorker.onmessage = ev => {
       const { type } = ev.data
       switch (type) {
         case 'plugged':
           setPlugged(true)
-          if(settings.piMost && settings?.most?.stream) {
-            console.log("setting most stream")
-            stream(settings.most.stream)
-          }
+          if (settings.piMost && settings.most?.stream) stream(settings.most.stream)
           break
         case 'unplugged':
           setPlugged(false)
@@ -125,12 +110,10 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
           processAudio(ev.data.message)
           break
         case 'media':
-          //TODO: implement
+          // TODO: implement
           break
         case 'command':
-          const {
-            message: { value }
-          } = ev.data
+          const { message: { value } } = ev.data
           switch (value) {
             case CommandMapping.startRecordAudio:
               startRecording()
@@ -140,120 +123,105 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
               break
             case CommandMapping.requestHostUI:
               navigate('/settings')
+              break
           }
           break
         case 'failure':
-          if (retryTimeoutRef.current == null) {
-            console.error(
-              `Carplay initialization failed -- Reloading page in ${RETRY_DELAY_MS}ms`,
-            )
-            retryTimeoutRef.current = setTimeout(() => {
-              window.location.reload()
-            }, RETRY_DELAY_MS)
+          if (!retryTimeoutRef.current) {
+            console.error(`Carplay init failed, retry in ${RETRY_DELAY_MS}ms`)
+            retryTimeoutRef.current = setTimeout(() => window.location.reload(), RETRY_DELAY_MS)
           }
           break
       }
     }
-  }, [carplayWorker, clearRetryTimeout, getAudioPlayer, processAudio, renderWorker, startRecording, stopRecording])
+  }, [carplayWorker, clearRetryTimeout, getAudioPlayer, processAudio, startRecording, stopRecording, settings, stream, navigate])
+
+  // Resize observer to trigger new frames
+  useEffect(() => {
+    const elem = mainElem.current
+    if (!elem) return
+    const obs = new ResizeObserver(() => carplayWorker.postMessage({ type: 'frame' }))
+    obs.observe(elem)
+    return () => obs.disconnect()
+  }, [carplayWorker])
+
+  // Send key commands
+  useEffect(() => {
+    carplayWorker.postMessage({ type: 'keyCommand', command })
+  }, [commandCounter])
+
 
   useEffect(() => {
-    const element = mainElem?.current
-    if(!element) return;
-    const observer = new ResizeObserver(() => {
-      console.log("size change")
-      carplayWorker.postMessage({type: 'frame'})
-    })
-    observer.observe(element)
-    return () => {
-      observer.disconnect()
+  // Handler for USB
+  const onUsbConnect = async () => {
+    const device = await findDevice();
+    if (device) {
+      setDeviceFound(true);
+      setReceivingVideo(true);
+      carplayWorker.postMessage({ type: 'start', payload: { config } });
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    carplayWorker.postMessage({type: 'keyCommand', command: command})
-  }, [commandCounter]);
-
-  const checkDevice = useCallback(
-    async (request: boolean = false) => {
-      const device = request ? await requestDevice() : await findDevice()
-      if (device) {
-        console.log('starting in check')
-        setDeviceFound(true)
-        setReceivingVideo(true)
-        carplayWorker.postMessage({ type: 'start', payload: {config} })
-      } else {
-        setDeviceFound(false)
-      }
-    },
-    [carplayWorker]
-  )
-
-  // usb connect/disconnect handling and device check
-  useEffect(() => {
-    navigator.usb.onconnect = async () => {
-      checkDevice()
+  // Handler for USB disconnect
+  const onUsbDisconnect = async () => {
+    const device = await findDevice();
+    if (!device) {
+      carplayWorker.postMessage({ type: 'stop' });
+      setDeviceFound(false);
+      setReceivingVideo(false);
+      setPlugged(false)
     }
+  };
 
-    navigator.usb.ondisconnect = async () => {
-      const device = await findDevice()
-      if (!device) {
-        carplayWorker.postMessage({ type: 'stop' })
-        setDeviceFound(false)
-      }
-    }
+  navigator.usb.addEventListener('connect', onUsbConnect);
+  navigator.usb.addEventListener('disconnect', onUsbDisconnect);
 
-    //checkDevice()
-  }, [carplayWorker, checkDevice])
+  onUsbConnect();
 
-  // const onClick = useCallback(() => {
-  //   checkDevice(true)
-  // }, [checkDevice])
+  return () => {
+    navigator.usb.removeEventListener('connect', onUsbConnect);
+    navigator.usb.removeEventListener('disconnect', onUsbDisconnect);
+  };
+  }, [carplayWorker, setReceivingVideo, config]);
 
-  const sendTouchEvent = useCarplayTouch(carplayWorker, width, height)
+  // Touch handling
+  const sendTouchEvent = useCarplayTouch(carplayWorker)
 
   const isLoading = !isPlugged
 
   return (
     <div
-      style={pathname === '/' ? { height: '100%', touchAction: 'none' } : { height: '1px' }}
-      id={'main'}
-      className="App"
+      id="main"
       ref={mainElem}
+      className="App"
+      style={
+        pathname === '/'
+          ? { height: '100%', width: '100%', touchAction: 'none' }
+          : { display: 'none' }
+      }
     >
-      {(deviceFound === false || isLoading) && pathname === '/' && (
+      {(!deviceFound || isLoading) && pathname === '/' && (
         <div
           style={{
             position: 'absolute',
             width: '100%',
             height: '100%',
             display: 'flex',
+	    flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
-          {deviceFound === false && (
-            <div style={{ textAlign: 'center' }}>
+          {!deviceFound ? (
+            <>
               <Typography>Searching For Dongle</Typography>
-              <RotatingLines
-                strokeColor="grey"
-                strokeWidth="5"
-                animationDuration="0.75"
-                width="96"
-                visible={true}
-              />
-            </div>
-          )}
-          {deviceFound && (
-            <div style={{ textAlign: 'center' }}>
+              <RotatingLines strokeColor="grey" strokeWidth={5} animationDuration={0.75} width={96} visible />
+            </>
+          ) : (
+            <>
               <Typography>Searching For Phone</Typography>
-              <RotatingLines
-                strokeColor="grey"
-                strokeWidth="5"
-                animationDuration="0.75"
-                width="96"
-                visible={true}
-              />
-            </div>
+              <RotatingLines strokeColor="grey" strokeWidth={5} animationDuration={0.75} width={96} visible />
+            </>
           )}
         </div>
       )}
@@ -264,19 +232,12 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
         onPointerUp={sendTouchEvent}
         onPointerCancel={sendTouchEvent}
         onPointerOut={sendTouchEvent}
-        style={{
-          height: '100%',
-          width: '100%',
-          padding: 0,
-          margin: 0,
-          display: 'flex',
-          visibility: isPlugged ? 'visible' : 'hidden'
-        }}
+        style={{ height: '100%', width: '100%', padding: 0, margin: 0, display: 'flex', visibility: isPlugged ? 'visible' : 'hidden' }}
       >
         <canvas
           ref={canvasRef}
-          id={'video'}
-          style={isPlugged ? { height: '100%' } : { height: '0%' }}
+          id="video"
+          style={isPlugged ? { width: '100%', height: '100%' } : { width: 0, height: 0 }}
         />
       </div>
     </div>

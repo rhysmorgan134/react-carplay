@@ -5,6 +5,8 @@
     <meta name="viewport" content="initial-scale=1, width=device-width"/>
     <meta name="theme-color" content="#000000" />
     <title>Carplay</title>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+	<meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
     <style>
       html, body, #root, #main, #videoContainer {
         margin: 0;

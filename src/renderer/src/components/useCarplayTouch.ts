@@ -1,44 +1,42 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { TouchAction } from 'node-carplay/web'
 import { CarPlayWorker } from './worker/types'
 
 export const useCarplayTouch = (
   worker: CarPlayWorker,
-  width: number,
-  height: number,
-) => {
-  const [pointerdown, setPointerDown] = useState(false)
+): React.PointerEventHandler<HTMLDivElement> => {
+  const pressedRef = useRef(false)
 
-  const sendTouchEvent: React.PointerEventHandler<HTMLDivElement> = useCallback(
-    e => {
-      let action = TouchAction.Up
-      if (e.type === 'pointerdown') {
-        action = TouchAction.Down
-        setPointerDown(true)
-      } else if (pointerdown) {
-        switch (e.type) {
-          case 'pointermove':
-            action = TouchAction.Move
-            break
-          case 'pointerup':
-          case 'pointercancel':
-          case 'pointerout':
-            setPointerDown(false)
-            action = TouchAction.Up
-            break
-        }
-      } else {
-        return
+  return useCallback(
+    (e) => {
+      let action: TouchAction
+      switch (e.type) {
+        case 'pointerdown':
+          pressedRef.current = true
+          action = TouchAction.Down
+          break
+        case 'pointermove':
+          if (!pressedRef.current) return
+          action = TouchAction.Move
+          break
+        case 'pointerup':
+        case 'pointercancel':
+        case 'pointerout':
+          if (!pressedRef.current) return
+          pressedRef.current = false
+          action = TouchAction.Up
+          break
+        default:
+          return
       }
 
-      const { offsetX: x, offsetY: y } = e.nativeEvent
-      worker.postMessage({
-        type: 'touch',
-        payload: { x: x / width, y: y / height, action },
-      })
-    },
-    [pointerdown, worker, width, height],
-  )
+      const rect = e.currentTarget.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = (e.clientY - rect.top) / rect.height
 
-  return sendTouchEvent
+      // Send the touch event to CarPlay worker
+      worker.postMessage({ type: 'touch', payload: { x, y, action } })
+    },
+    [worker],
+  )
 }

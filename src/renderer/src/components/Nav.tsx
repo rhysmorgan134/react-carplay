@@ -8,12 +8,18 @@ import CameraIcon from '@mui/icons-material/Camera';
 import ExitToApp from '@mui/icons-material/ExitToApp';
 import { Link, useLocation } from 'react-router-dom';
 import { useStatusStore } from '../store/store';
+import { useTheme } from '@mui/material/styles';
 
-export default function Nav({ receivingVideo, settings }) {
+interface NavProps {
+  settings: Record<string, any>;
+}
+
+export default function Nav({ settings }: NavProps) {
   const [isPlugged] = useStatusStore(state => [state.isPlugged]);
   const { pathname } = useLocation();
+  const theme = useTheme();
 
-  if (receivingVideo && pathname === "/") {
+  if (isPlugged && pathname === '/') {
     return null;
   }
 
@@ -23,25 +29,50 @@ export default function Nav({ receivingVideo, settings }) {
     '/info': 2,
     '/camera': 3,
   };
-  const value = routeToIndex[pathname] ?? false;
+  const value = routeToIndex[pathname] ?? 0;
 
-  const quit = () => {
-    window.api.quit()
-  }
+  const quit = () => window.api.quit();
 
   return (
     <Tabs
       value={value}
-      aria-label="icon label tabs example"
+      aria-label="Navigation Tabs"
       variant="fullWidth"
     >
-      <Tab icon={<PhoneIcon />}      component={Link} to="/" />
-      <Tab icon={<SettingsIcon />}   component={Link} to="/settings" />
-      <Tab icon={<InfoIcon />}       component={Link} to="/info" />
+      {/* Phone Tab: icon turns green when plugged */}
+      <Tab
+        sx={{
+          '& svg': {
+            color: isPlugged ? theme.palette.success.main : 'inherit',
+          },
+        }}
+        icon={<PhoneIcon />}
+        component={Link}
+        to="/"
+      />
+      {/* Other Tabs */}
+      <Tab
+        icon={<SettingsIcon />}
+        component={Link}
+        to="/settings"
+      />
+      <Tab
+        icon={<InfoIcon />}
+        component={Link}
+        to="/info"
+      />
       {settings?.camera && (
-        <Tab icon={<CameraIcon />} component={Link} to="/camera" />
+        <Tab
+          icon={<CameraIcon />}
+          component={Link}
+          to="/camera"
+        />
       )}
-      <Tab icon={<ExitToApp />} onClick={quit} />
+      <Tab
+        icon={<ExitToApp />}
+        onClick={quit}
+      />
     </Tabs>
   );
 }
+
