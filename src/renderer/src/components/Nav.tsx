@@ -7,11 +7,13 @@ import InfoIcon from '@mui/icons-material/Info';
 import CameraIcon from '@mui/icons-material/Camera';
 import { Link, useLocation } from "react-router-dom";
 import ExitToApp from '@mui/icons-material/ExitToApp';
-import { useStatusStore } from "../store/store";
+import { useCarplayStore, useStatusStore } from "../store/store";
+import { useEffect } from "react";
 
 export default function Nav({ receivingVideo, settings }) {
   const [value, setValue] = React.useState(0);
   const [isPlugged] = useStatusStore(state => [state.isPlugged])
+  const [forceSwitch] = useCarplayStore(state => [state.forceSwitch])
   const { pathname } = useLocation()
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -20,6 +22,10 @@ export default function Nav({ receivingVideo, settings }) {
   const quit = () => {
     window.api.quit()
   }
+
+  useEffect(() => {
+    pathname === '/' ? forceSwitch() : null
+  }, [pathname]);
 
   return (
     <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" centered sx={pathname === '/' && isPlugged ? {minHeight: '0px', height: '0px'} : {}}>

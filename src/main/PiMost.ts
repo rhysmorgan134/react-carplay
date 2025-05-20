@@ -1,24 +1,27 @@
-import { SocketMost, SocketMostClient } from 'socketmost'
-import { Stream } from "socketmost/dist/modules/Messages";
+import { SocketMostUsb } from 'socketmost'
+import { MostRxMessage, Os8104Events, Stream } from "socketmost/dist/modules/Messages";
 import { MessageNames, Socket } from "./Socket";
+const { exec } = require("child_process");
 
 export class PiMost {
-  socketMost: SocketMost
-  socketMostClient: SocketMostClient
+  socketMost: SocketMostUsb
   socket: Socket
   constructor(socket: Socket) {
     console.log("creating client in PiMost")
-    this.socketMost = new SocketMost()
-    this.socketMostClient = new SocketMostClient()
+    this.socketMost = new SocketMostUsb()
     this.socket = socket
 
-    this.socket.on(MessageNames.Stream, (stream) => {
-      this.stream(stream)
-    })
-  }
+    this.socketMost.on(Os8104Events.MostMessageRx, (message: MostRxMessage) => {
 
-  stream(stream: Stream) {
-    this.socketMostClient.stream(stream)
+    })
+
+    this.socketMost.on(Os8104Events.Shutdown, () => {
+      exec('sudo shutdown now')
+    })
+
+    this.socket.on('forceSwitch', () => {
+      this.socketMost.forceSwitch()
+    })
   }
 }
 

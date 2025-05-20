@@ -8,6 +8,7 @@ interface CarplayStore {
   saveSettings: (settings: ExtraConfig) => void
   getSettings: () => void
   stream: (stream: Stream) => void
+  forceSwitch: () => void
 }
 
 interface StatusStore {
@@ -29,6 +30,9 @@ export const useCarplayStore = create<CarplayStore>()((set) =>({
   },
   stream: (stream) => {
     socket.emit('stream', stream)
+  },
+  forceSwitch: () => {
+    socket.emit('forceSwitch')
   }
 }))
 

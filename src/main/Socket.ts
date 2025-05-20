@@ -38,6 +38,10 @@ export class Socket extends EventEmitter {
       socket.on(MessageNames.Stream, (stream: Stream) => {
         this.emit(MessageNames.Stream, stream)
       })
+
+      socket.on('forceSwitch', () => {
+        this.emit('forceSwitch')
+      })
     })
 
     this.io.listen(4000)

@@ -167,6 +167,7 @@ function Carplay({ receivingVideo, setReceivingVideo, settings, command, command
     return () => {
       observer.disconnect()
     }
+
   }, []);
 
   useEffect(() => {

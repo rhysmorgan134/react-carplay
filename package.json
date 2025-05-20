@@ -40,12 +40,14 @@
     "react-router-dom": "^6.16.0",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
+    "socketmost": "^3.0.1-alpha.87",
     "stream-browserify": "^3.0.0",
     "usb": "^2.10.0",
     "vite-plugin-esmodule": "^1.5.0",
-    "zustand": "^4.4.5",
-    "socketcan": "^4.0.4",
-    "socketmost": "^2.0.6"
+    "zustand": "^4.4.5"
+  },
+  "optionalDependencies": {
+    "socketcan": "^4.0.4"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",

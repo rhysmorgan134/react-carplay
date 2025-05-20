@@ -4,9 +4,10 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { DEFAULT_CONFIG } from 'node-carplay/node'
 import { Socket } from './Socket'
 import * as fs from 'fs';
+import { PiMost } from "./PiMost";
 
 // comment below line to allow running on non linux devices
-import {Canbus} from "./Canbus"
+//import {Canbus} from "./Canbus"
 
 import { ExtraConfig, KeyBindings } from "./Globals";
 // import CarplayNode, {DEFAULT_CONFIG, CarplayMessage} from "node-carplay/node";
@@ -43,10 +44,10 @@ const EXTRA_CONFIG: ExtraConfig = {
 }
 
 // comment below line to allow running on non linux devices
-let canbus: null | Canbus
+//let canbus: null | Canbus
 
 let socket: null | Socket
-
+let piMost: null | PiMost
 fs.exists(configPath, (exists) => {
     if(exists) {
       config = JSON.parse(fs.readFileSync(configPath).toString())
@@ -65,17 +66,18 @@ fs.exists(configPath, (exists) => {
       console.log("config created and read")
     }
     socket = new Socket(config!, saveSettings)
+    piMost = new PiMost(socket)
     // comment below if statement to allow running on non linux devices
-    if(config!.canbus) {
-      console.log("Configuring can", config!.canConfig)
-      canbus = new Canbus('can0',  socket, config!.canConfig)
-      canbus.on('lights', (data) => {
-        console.log('lights', data)
-      })
-      canbus.on('reverse', (data) => {
-        mainWindow?.webContents?.send('reverse', data)
-      })
-    }
+    // if(config!.canbus) {
+    //   console.log("Configuring can", config!.canConfig)
+    //   canbus = new Canbus('can0',  socket, config!.canConfig)
+    //   canbus.on('lights', (data) => {
+    //     console.log('lights', data)
+    //   })
+    //   canbus.on('reverse', (data) => {
+    //     mainWindow?.webContents?.send('reverse', data)
+    //   })
+    // }
 
 })
 
